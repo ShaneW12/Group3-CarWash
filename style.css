@@ -1,0 +1,227 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    line-height: 1.6;
+    color: #222;
+    background-color: #f5f7fa;
+}
+
+
+/* Navigation rules  */
+
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    padding: 20px 8%;
+
+    background-color: #ffffff;
+
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.logo a {
+    font-size: 28px;
+    font-weight: bold;
+    text-decoration: none;
+    color: #1479ff;
+}
+
+.nav-links {
+    display: flex;
+    gap: 25px;
+    list-style: none;
+}
+
+.nav-links a {
+    text-decoration: none;
+    color: #333;
+    font-weight: 500;
+}
+
+.nav-links a:hover {
+    color: #1479ff;
+}
+
+
+/* Hero Section rules */
+
+.hero {
+    min-height: 550px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    text-align: center;
+
+    padding: 40px 20px;
+
+    background: linear-gradient(
+        135deg,
+        #1479ff,
+        #00b8ff
+    );
+}
+
+.hero-content {
+    max-width: 700px;
+    color: white;
+}
+
+.hero h1 {
+    font-size: 52px;
+    margin-bottom: 20px;
+}
+
+.hero p {
+    font-size: 20px;
+    margin-bottom: 30px;
+}
+
+
+/* Button  rules */
+
+.btn,
+.secondary-btn {
+    display: inline-block;
+
+    padding: 12px 24px;
+
+    border-radius: 6px;
+
+    text-decoration: none;
+
+    font-weight: bold;
+}
+
+.btn {
+    background-color: white;
+    color: #1479ff;
+}
+
+.btn:hover {
+    background-color: #eeeeee;
+}
+
+.secondary-btn {
+    margin-top: 30px;
+
+    background-color: #1479ff;
+    color: white;
+}
+
+.secondary-btn:hover {
+    background-color: #0c5dcc;
+}
+
+
+/* Service card. rules */
+
+.services-preview {
+    padding: 70px 8%;
+    text-align: center;
+    background-color: white;
+}
+
+.services-preview h2,
+.why-us h2 {
+    font-size: 36px;
+    margin-bottom: 10px;
+}
+
+.section-description {
+    margin-bottom: 40px;
+    color: #666;
+}
+
+.service-container {
+    display: flex;
+    justify-content: center;
+    gap: 25px;
+    flex-wrap: wrap;
+}
+
+.service-card {
+    width: 250px;
+
+    padding: 30px 20px;
+
+    background-color: #f5f7fa;
+
+    border-radius: 10px;
+
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+}
+
+.service-card h3 {
+    margin-bottom: 10px;
+    color: #1479ff;
+}
+
+
+/* Why Us rules */
+
+.why-us {
+    padding: 70px 8%;
+    text-align: center;
+}
+
+.features {
+    display: flex;
+    justify-content: center;
+    gap: 40px;
+
+    margin-top: 40px;
+}
+
+.features div {
+    max-width: 300px;
+}
+
+.features h3 {
+    margin-bottom: 10px;
+}
+
+
+/* Footer rules */
+
+footer {
+    padding: 25px;
+
+    text-align: center;
+
+    background-color: #222;
+    color: white;
+}
+
+
+/* Mobile viewport */
+
+@media (max-width: 768px) {
+
+    .navbar {
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    .nav-links {
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+
+    .hero h1 {
+        font-size: 38px;
+    }
+
+    .features {
+        flex-direction: column;
+        align-items: center;
+    }
+}
