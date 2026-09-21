@@ -1,37 +1,6 @@
+{% extends 'base.html' %}
 
-<!DOCTYPE html>
-<html lang="en">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <title>Services | CleanRide</title>
-
-    <link rel="stylesheet" href="style.css">
-</head>
-
-<body>
-
-    <!-- Navigation -->
-    <header>
-        <nav class="navbar">
-
-            <div class="logo">
-                <a href="index.html">CleanRide</a>
-            </div>
-
-            <ul class="nav-links">
-                <li><a href="index.html">Home</a></li>
-                <li><a href="services.html">Services</a></li>
-                <li><a href="booking.html">Book Appointment</a></li>
-                <li><a href="about.html">About</a></li>
-                <li><a href="login.html">Login</a></li>
-            </ul>
-
-        </nav>
-    </header>
-
+{% block content %}
 
     <!-- Services Header -->
     <section class="page-header">
@@ -179,16 +148,4 @@
     </main>
 
 
-    <!-- Footer -->
-    <footer>
-
-        <p>
-            &copy; 2026 CleanRide Car Wash. All rights reserved.
-        </p>
-
-    </footer>
-
-</body>
-
-</html>
-
+    {% endblock %}

@@ -1,28 +1,8 @@
-<!DOCTYPE html>
-    <html lang = "en">
-    <head>
-        <meta charset = "UTF-8">
-        <meta name = "viewport" content = "width=device-width, initial-scale=1.0">
-        <title>About | CleanRide</title>
-        <link rel = "stylesheet" href = "style.css">
-    </head>
+{% extends 'base.html' %}
 
-    <body>
-        <!-- Navigation -->
-        <header>
-            <nav class = "navbar">
-                <div class = "logo">
-                    <a href = "index.html">CleanRide</a>
-                </div>
-                <ul class = "nav-links">
-                    <li><a href = "index.html">Home</a></li>
-                    <li><a href = "services.html">Services</a></li>
-                    <li><a href = "booking.html">Book Appointment</a></li>
-                    <li><a href = "about.html">About</a></li>
-                    <li><a href = "login.html">Login</a></li>
-                </ul>
-            </nav>
-        </header>
+{% block content %} 
+
+    
 
         <!-- About Page -->
         <main class = "about-page">
@@ -48,3 +28,6 @@
 
                 <h2>Contact Us</h2>
                 <p>If you have any questions or would like to learn more about our services, please don't hesitate to reach out. You can contact us via email at
+                </main>
+                
+                {% endblock %}
