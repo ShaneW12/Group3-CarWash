@@ -728,3 +728,218 @@ margin-bottom: 10px;
 
 }
 
+/* =========================
+   Signup Page
+   ========================= */
+
+.signup-page {
+    min-height: calc(100vh - 80px);
+    padding: 60px 20px;
+    background-color: #f5f7fa;
+}
+
+.signup-container {
+    max-width: 500px;
+    margin: auto;
+    padding: 40px;
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 0 3px 15px rgba(0, 0, 0, 0.08);
+}
+
+.signup-container h1 {
+    text-align: center;
+    font-size: 40px;
+    margin-bottom: 10px;
+    color: #222;
+}
+
+.signup-container > p {
+    text-align: center;
+    color: #666;
+    margin-bottom: 30px;
+}
+
+.signup-container .form-section {
+    margin-bottom: 25px;
+}
+
+.signup-container .form-section label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: bold;
+}
+
+.signup-container input[type="text"],
+.signup-container input[type="email"],
+.signup-container input[type="tel"],
+.signup-container input[type="password"] {
+    width: 100%;
+    padding: 12px 14px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 16px;
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.signup-container input[type="text"]:focus,
+.signup-container input[type="email"]:focus,
+.signup-container input[type="tel"]:focus,
+.signup-container input[type="password"]:focus {
+    border-color: #1479ff;
+    box-shadow: 0 0 0 3px rgba(20, 121, 255, 0.12);
+}
+
+.signup-container .btn {
+    width: 100%;
+    margin-top: 5px;
+    border: none;
+    background-color: #1479ff; 
+    color: white;
+    font-size: 17px;
+    cursor: pointer;
+}
+
+.signup-container .btn:hover {
+    background-color: #0c5dcc;
+}
+
+.signup-container form + p {
+    margin-top: 25px;
+    margin-bottom: 0;
+}
+
+.signup-container form + p a {
+    color: #1479ff;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.signup-container form + p a:hover {
+    text-decoration: underline;
+}
+
+
+/* Mobile */
+
+@media (max-width: 600px) {
+
+    .signup-page {
+        padding: 45px 20px;
+    }
+
+    .signup-container {
+        padding: 30px 25px;
+    }
+
+    .signup-container h1 {
+        font-size: 32px;
+    }
+
+}
+
+
+/* =========================
+   Forgot Password Page
+   ========================= */
+
+.forgot-password-page {
+    min-height: calc(100vh - 80px);
+
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+
+    padding: 60px 20px;
+
+    background-color: #f5f7fa;
+}
+
+
+/* Forgot Password Container */
+
+.forgot-password-container {
+    width: 100%;
+    max-width: 500px;
+    padding: 40px;
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 0 3px 15px rgba(0, 0, 0, 0.08);
+}
+
+
+/* Header */
+
+.forgot-password-container h1 {
+    text-align: center;
+    font-size: 40px;
+    margin-bottom: 10px;
+    color: #222;
+}
+
+
+/* Description */
+
+.forgot-password-container > p {
+    text-align: center;
+    color: #666;
+    font-size: 16px;
+    margin-bottom: 30px;
+}
+
+
+/* Form Section */
+
+.forgot-password-container .form-section {
+    margin-bottom: 25px;
+}
+
+.forgot-password-container .form-section label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: bold;
+}
+
+
+/* Email Input */
+
+.forgot-password-container input[type="email"] {
+    width: 100%;
+    padding: 12px 14px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 16px;
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+
+/* Input Focus */
+
+.forgot-password-container input[type="email"]:focus {
+    border-color: #1479ff;
+    box-shadow: 0 0 0 3px rgba(20, 121, 255, 0.12);
+}
+
+
+/* Mobile */
+
+@media (max-width: 600px) {
+
+    .forgot-password-page {
+        padding: 45px 20px;
+    }
+
+    .forgot-password-container {
+        padding: 30px 25px;
+    }
+
+    .forgot-password-container h1 {
+        font-size: 32px;
+    }
+
+}
+
+
+

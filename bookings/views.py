@@ -15,3 +15,9 @@ def login(request):
 
 def booking(request):
     return render(request, 'booking.html')
+
+def signup(request):
+    return render(request, 'signup.html')
+
+def forgot_password(request):
+    return render(request, 'forgot_password.html')

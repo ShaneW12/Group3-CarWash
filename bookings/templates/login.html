@@ -25,10 +25,11 @@
 
                     <!-- Submit Button -->
                     <button type = "submit" class = "btn">Login</button>
-                    <button type = "submit" class ="btn">Sign Up</button>
-                    <button type = "submit" class = "btn">Forgot Password</button>
                 </form>
-                
+
+                <!-- Sign Up and Forgot Password Buttons -->
+                <a href="{% url 'signup' %}" class = "btn">Sign Up</a>
+                <a href="{% url 'forgot_password' %}" class = "btn">Forgot Password</a>
             </section>
         </main>
 
