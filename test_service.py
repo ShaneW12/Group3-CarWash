@@ -30,6 +30,7 @@ selected_services = [
 total = calculate_total(selected_services)
 
 print("Total: $" + str(total))
+print("------------------------")
 
 #here come the rewards part
 rewards = Rewards()
@@ -39,6 +40,8 @@ rewards.add_tokens(total)
 print("Tokens: " + str(rewards.tokens))
 print("Can redeem: " + str(rewards.can_redeem()))
 
+#test of math 
+print("------------------------")
 rewards.add_tokens(9)
 
 print("Tokens after spending another $9: " + str(rewards.tokens))
