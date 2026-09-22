@@ -22,3 +22,20 @@ def calculate_total(services):
         total += service.price
 
     return total
+
+class Rewards:
+    def __init__(self):
+        self.tokens = 0
+
+    def add_tokens(self, amount):
+        self.tokens += int(amount)
+
+    def can_redeem(self):
+        return self.tokens >= 100
+
+    def redeem_wash(self):
+        if self.can_redeem():
+            self.tokens -= 100
+            return True
+
+        return False

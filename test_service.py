@@ -5,7 +5,8 @@ from service import (
     interior_detailing,
     vacuum,
     additional_cleaning,
-    calculate_total
+    calculate_total,
+    Rewards
 )
 
 
@@ -29,3 +30,20 @@ selected_services = [
 total = calculate_total(selected_services)
 
 print("Total: $" + str(total))
+
+#here come the rewards part
+rewards = Rewards()
+
+rewards.add_tokens(total)
+
+print("Tokens: " + str(rewards.tokens))
+print("Can redeem: " + str(rewards.can_redeem()))
+
+rewards.add_tokens(9)
+
+print("Tokens after spending another $9: " + str(rewards.tokens))
+print("Can redeem: " + str(rewards.can_redeem()))
+
+rewards.redeem_wash()
+
+print("Tokens after redeeming free wash: " + str(rewards.tokens))
