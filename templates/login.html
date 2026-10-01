@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+        <!-- Login Page -->
+        <main class = "login-page">
+            <section class = "login-header">
+                <h1>Login to Your Account</h1>
+                <p>Access your account to manage appointments and services.</p>
+            </section>
+
+            <section class = "login-container">
+                <form>
+                    <!-- Email -->
+                    <div class = "form-section">
+                        <h2>Email Address</h2>
+                        <input type = "email" id = "email" name = "email" placeholder = "Enter your email" required>
+                    </div>
+
+                    <!-- Password -->
+                    <div class = "form-section">
+                        <h2>Password</h2>
+                        <input type = "password" id = "password" name = "password" placeholder = "Enter your password" required>
+                    </div>
+
+                    <!-- Submit Button -->
+                    <button type = "submit" class = "btn">Login</button>
+                </form>
+
+                <!-- Sign Up and Forgot Password Buttons -->
+                <a href="{% url 'signup' %}" class = "btn">Sign Up</a>
+                <a href="{% url 'forgot_password' %}" class = "btn">Forgot Password</a>
+            </section>
+        </main>
+
+        {% endblock %}
+        
