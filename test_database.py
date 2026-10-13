@@ -1,23 +1,20 @@
-from pymongo import MongoClient
-from pymongo.errors import ConnectionFailure
+from pymongo.errors import PyMongoError
+
+from database import connect_to_database
+
+
+client = None
 
 try:
-    client = MongoClient(
-        "mongodb://localhost:27017/",
-        serverSelectionTimeoutMS=5000
-    )
+    client, database = connect_to_database()
 
-    client.admin.command("ping")
-
-    database = client["cleanride"]
-
-    print("Successfully connected to MongoDB!")
+    print("Successfully connected to MongoDB Atlas!")
     print("Database selected:", database.name)
 
-except ConnectionFailure as error:
-    print("Could not connect to MongoDB.")
+except (PyMongoError, RuntimeError) as error:
+    print("Could not connect to MongoDB Atlas.")
     print(error)
 
 finally:
-    if "client" in locals():
+    if client is not None:
         client.close()

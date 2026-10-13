@@ -1,26 +1,17 @@
-from pymongo import MongoClient
-from pymongo.errors import ConnectionFailure
-from service import services
+from pymongo.errors import PyMongoError
 
+from database import connect_to_database
+from service_db import services
+
+
+client = None
 
 try:
-    # Connect to the MongoDB server running on this computer
-    client = MongoClient(
-        "mongodb://localhost:27017/",
-        serverSelectionTimeoutMS=5000
-    )
-
-    # Check that MongoDB is responding
-    client.admin.command("ping")
-
-    # Select the database and collection
-    database = client["cleanride"]
+    client, database = connect_to_database()
     service_collection = database["services"]
 
-    # Prevent two services from using the same code
     service_collection.create_index("code", unique=True)
 
-    # Add or update every service
     for service in services:
         service_collection.update_one(
             {"code": service["code"]},
@@ -31,13 +22,13 @@ try:
         print(f'Saved: {service["name"]}')
 
     print()
-    print("Services successfully saved to MongoDB!")
+    print("Services successfully saved to MongoDB Atlas!")
     print("Number of services:", service_collection.count_documents({}))
 
-except ConnectionFailure as error:
-    print("Could not connect to MongoDB.")
+except (PyMongoError, RuntimeError) as error:
+    print("Could not save services.")
     print(error)
 
 finally:
-    if "client" in locals():
+    if client is not None:
         client.close()

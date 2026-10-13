@@ -1,5 +1,5 @@
 # Prices copied from Sheraz's branch.
-python3 test_database.py
+
 services = [
     {"code": "standard-wash", "name": "Standard Car Wash", "price_cents": 2500},
     {"code": "triple-foam", "name": "Triple-Foam Wash", "price_cents": 4500},
