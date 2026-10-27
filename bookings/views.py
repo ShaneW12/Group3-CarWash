@@ -1,4 +1,6 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
+from django.contrib import messages
+from django.contrib.auth import authenticate, login as auth_login
 
 # Create your views here.
 def home(request):
@@ -10,8 +12,22 @@ def services(request):
 def about(request):
     return render(request, 'about.html')
 
+
 def login(request):
-    return render(request, 'login.html')
+    if request.method == "POST":
+        email = request.POST.get("email", "").strip().lower()
+        password = request.POST.get("password", "")
+
+        user = authenticate(request, username=email, password=password)
+
+        if user is not None:
+            auth_login(request, user)
+            messages.success(request, "You have logged in successfully.")
+            return redirect("index")
+
+        messages.error(request, "Invalid email or password.")
+
+    return render(request, "login.html")
 
 def booking(request):
     return render(request, 'booking.html')
