@@ -10,7 +10,8 @@
             </section>
 
             <section class = "login-container">
-                <form>
+                <form method="POST">
+                    {% csrf_token %}
                     <!-- Email -->
                     <div class = "form-section">
                         <h2>Email Address</h2>
