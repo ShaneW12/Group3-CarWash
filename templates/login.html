@@ -10,7 +10,9 @@
             </section>
 
             <section class = "login-container">
-                <form>
+                <form method="POST" action="{% url 'login' %}">
+                    {% csrf_token %}
+                    <input type="hidden" name="next" value="{{ next }}">
                     <!-- Email -->
                     <div class = "form-section">
                         <h2>Email Address</h2>
