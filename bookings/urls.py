@@ -7,6 +7,7 @@ urlpatterns = [
     path("services/", views.services, name="services"),
     path("about/", views.about, name="about"),
     path("login/", views.login, name="login"),
+    path("logout/", views.logout, name="logout"),
     path("booking/", views.booking, name="booking"),
 
     # Appointment Management
