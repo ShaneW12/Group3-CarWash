@@ -943,3 +943,12 @@ margin-bottom: 10px;
 
 
 
+
+
+/* Appointment management / accessibility improvements */
+.site-messages { max-width: 850px; margin: 1rem auto; padding: 0 1rem; }
+.site-message { background: #e8f6ee; border: 1px solid #9bceb0; padding: 0.75rem 1rem; border-radius: 6px; }
+.site-message.error { background: #fff0ed; border-color: #edafa5; }
+.nav-logout { display: inline; margin: 0; }
+.nav-logout button { cursor: pointer; background: none; border: 0; font: inherit; color: inherit; padding: 0; }
+.nav-logout button:hover { text-decoration: underline; }
