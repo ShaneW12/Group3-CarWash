@@ -17,9 +17,9 @@ urlpatterns = [
         name="my_appointments"
     ),
     path(
-        "cancel-appointment/<int:appointment_id>/",
-        views.cancel_appointment,
-        name="cancel_appointment"
+    'cancel-appointment/<str:appointment_id>/',
+    views.cancel_appointment,
+    name='cancel_appointment'
     ),
 
     path("signup/", views.signup, name="signup"),
