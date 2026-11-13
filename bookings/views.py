@@ -1,6 +1,6 @@
 
 from datetime import date as today_date
-
+from datetime import date
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.contrib.auth import authenticate, login as auth_login, logout as auth_logout, get_user_model
@@ -14,6 +14,7 @@ from django.views.decorators.http import require_POST
 
 from .models import Appointment
 
+vehicle_years = range(date.today().year, 1995, -1)
 
 # Existing website pages
 def home(request):
