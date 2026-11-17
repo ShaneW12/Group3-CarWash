@@ -37,7 +37,9 @@ class AppointmentTests(TestCase):
                 "last_name": "Customer",
                 "email": "new@example.com",
                 "phone": "5551234567",
-                "vehicle": "civic",
+                "vehicle_year": "2022",
+                "vehicle_make": "Honda",
+                "vehicle_model": "Civic",
                 "service": ["basic-wash"],
                 "date": (date.today() + timedelta(days=4)).isoformat(),
                 "time": "10:00",
@@ -126,7 +128,9 @@ class CustomerFlowTests(TestCase):
         response = self.client.post(reverse("booking"), {
             "first_name": "Visitor", "last_name": "Customer",
             "email": "other@example.com", "phone": "5551231234",
-            "vehicle": "civic", "service": ["basic-wash"],
+            "vehicle_year": "2022",
+            "vehicle_make": "Honda",
+            "vehicle_model": "Civic", "service": ["basic-wash"],
             "date": (date.today() + timedelta(days=3)).isoformat(),
             "time": "10:00",
         })

@@ -1,6 +1,6 @@
 
 from datetime import date as today_date
-
+from datetime import date
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.contrib.auth import authenticate, login as auth_login, logout as auth_logout, get_user_model
@@ -11,8 +11,69 @@ from django.core.exceptions import ValidationError
 from django.utils.dateparse import parse_date, parse_time
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_POST
+from django.http import JsonResponse
+from django.views.decorators.http import require_GET
+
+from .nhtsa import get_vehicle_makes, get_vehicle_models
 
 from .models import Appointment
+
+vehicle_years = range(date.today().year, 1995, -1)
+
+@require_GET
+def vehicle_makes(request):
+    try:
+        makes = get_vehicle_makes()
+
+        return JsonResponse({
+            "makes": [
+                {
+                    "id": item["MakeId"],
+                    "name": item["MakeName"]
+                }
+                for item in makes
+            ]
+        })
+
+    except Exception:
+        return JsonResponse(
+            {"error": "Unable to retrieve vehicle makes."},
+            status=503
+        )
+
+
+@require_GET
+def vehicle_models(request):
+    make = request.GET.get("make", "").strip()
+    year = request.GET.get("year", "").strip()
+
+    if not make or not year:
+        return JsonResponse(
+            {"error": "Make and year are required."},
+            status=400
+        )
+
+    if not year.isdigit() or not 1996 <= int(year) <= date.today().year:
+        return JsonResponse(
+            {"error": "Invalid vehicle year."},
+            status=400
+        )
+
+    try:
+        models = get_vehicle_models(make, year)
+
+        return JsonResponse({
+            "models": [
+                item["Model_Name"]
+                for item in models
+            ]
+        })
+
+    except Exception:
+        return JsonResponse(
+            {"error": "Unable to retrieve vehicle models."},
+            status=503
+        )
 
 
 # Existing website pages
@@ -69,16 +130,15 @@ def booking(request):
             email = request.user.email.lower()
         phone = request.POST.get("phone", "").strip()
 
-        vehicle = request.POST.get("vehicle", "")
+        
         selected_services = request.POST.getlist("service")
 
         appointment_date = parse_date(request.POST.get("date", ""))
         appointment_time = parse_time(request.POST.get("time", ""))
 
-        vehicles = {
-            "civic": ("Honda", "Civic"),
-            "rav4": ("Toyota", "RAV4"),
-        }
+        vehicle_year = request.POST.get("vehicle_year", "")
+        vehicle_make = request.POST.get("vehicle_make", "").strip()
+        vehicle_model = request.POST.get("vehicle_model", "").strip()
 
         allowed_services = {
             "basic-wash",
@@ -94,7 +154,9 @@ def booking(request):
             or not last_name
             or not email
             or not phone
-            or vehicle not in vehicles
+            or not vehicle_year
+            or not vehicle_make
+            or not vehicle_model
             or not selected_services
             or any(s not in allowed_services for s in selected_services)
             or not appointment_date
@@ -113,19 +175,19 @@ def booking(request):
             )
             return render(request, "booking.html")
 
-        make, model = vehicles[vehicle]
+        
 
         appointment = Appointment(
-            customer_name=f"{first_name} {last_name}",
-            email=email,
-            phone=phone,
-            vehicle_make=make,
-            vehicle_model=model,
-            service=", ".join(selected_services),
-            appointment_date=appointment_date,
-            appointment_time=appointment_time,
-            status="Scheduled",
-        )
+    customer_name=f"{first_name} {last_name}",
+    email=email,
+    phone=phone,
+    vehicle_make=vehicle_make,
+    vehicle_model=vehicle_model,
+    service=", ".join(selected_services),
+    appointment_date=appointment_date,
+    appointment_time=appointment_time,
+    status="Scheduled",
+)
 
         try:
             appointment.full_clean()
