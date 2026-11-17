@@ -130,7 +130,7 @@ def booking(request):
             email = request.user.email.lower()
         phone = request.POST.get("phone", "").strip()
 
-        vehicle = request.POST.get("vehicle", "")
+        
         selected_services = request.POST.getlist("service")
 
         appointment_date = parse_date(request.POST.get("date", ""))
@@ -154,7 +154,9 @@ def booking(request):
             or not last_name
             or not email
             or not phone
-            or vehicle not in vehicles
+            or not vehicle_year
+            or not vehicle_make
+            or not vehicle_model
             or not selected_services
             or any(s not in allowed_services for s in selected_services)
             or not appointment_date
@@ -173,19 +175,19 @@ def booking(request):
             )
             return render(request, "booking.html")
 
-        make, model = vehicles[vehicle]
+        
 
         appointment = Appointment(
-            customer_name=f"{first_name} {last_name}",
-            email=email,
-            phone=phone,
-            vehicle_make=make,
-            vehicle_model=model,
-            service=", ".join(selected_services),
-            appointment_date=appointment_date,
-            appointment_time=appointment_time,
-            status="Scheduled",
-        )
+    customer_name=f"{first_name} {last_name}",
+    email=email,
+    phone=phone,
+    vehicle_make=vehicle_make,
+    vehicle_model=vehicle_model,
+    service=", ".join(selected_services),
+    appointment_date=appointment_date,
+    appointment_time=appointment_time,
+    status="Scheduled",
+)
 
         try:
             appointment.full_clean()
