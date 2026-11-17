@@ -11,10 +11,70 @@ from django.core.exceptions import ValidationError
 from django.utils.dateparse import parse_date, parse_time
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_POST
+from django.http import JsonResponse
+from django.views.decorators.http import require_GET
+
+from .nhtsa import get_vehicle_makes, get_vehicle_models
 
 from .models import Appointment
 
 vehicle_years = range(date.today().year, 1995, -1)
+
+@require_GET
+def vehicle_makes(request):
+    try:
+        makes = get_vehicle_makes()
+
+        return JsonResponse({
+            "makes": [
+                {
+                    "id": item["MakeId"],
+                    "name": item["MakeName"]
+                }
+                for item in makes
+            ]
+        })
+
+    except Exception:
+        return JsonResponse(
+            {"error": "Unable to retrieve vehicle makes."},
+            status=503
+        )
+
+
+@require_GET
+def vehicle_models(request):
+    make = request.GET.get("make", "").strip()
+    year = request.GET.get("year", "").strip()
+
+    if not make or not year:
+        return JsonResponse(
+            {"error": "Make and year are required."},
+            status=400
+        )
+
+    if not year.isdigit() or not 1996 <= int(year) <= date.today().year:
+        return JsonResponse(
+            {"error": "Invalid vehicle year."},
+            status=400
+        )
+
+    try:
+        models = get_vehicle_models(make, year)
+
+        return JsonResponse({
+            "models": [
+                item["Model_Name"]
+                for item in models
+            ]
+        })
+
+    except Exception:
+        return JsonResponse(
+            {"error": "Unable to retrieve vehicle models."},
+            status=503
+        )
+
 
 # Existing website pages
 def home(request):
@@ -76,10 +136,9 @@ def booking(request):
         appointment_date = parse_date(request.POST.get("date", ""))
         appointment_time = parse_time(request.POST.get("time", ""))
 
-        vehicles = {
-            "civic": ("Honda", "Civic"),
-            "rav4": ("Toyota", "RAV4"),
-        }
+        vehicle_year = request.POST.get("vehicle_year", "")
+        vehicle_make = request.POST.get("vehicle_make", "").strip()
+        vehicle_model = request.POST.get("vehicle_model", "").strip()
 
         allowed_services = {
             "basic-wash",

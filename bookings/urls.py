@@ -28,4 +28,15 @@ urlpatterns = [
         views.forgot_password,
         name="forgot_password"
     ),
+    path(
+    "api/vehicle/makes/",
+    views.vehicle_makes,
+    name="vehicle_makes"
+),
+
+path(
+    "api/vehicle/models/",
+    views.vehicle_models,
+    name="vehicle_models"
+),
 ]
