@@ -143,3 +143,86 @@
         });
 
     });
+
+/*
+ *  Dynamic Service Pricing
+ * Updates the booking summary when services change.
+ */
+
+document.addEventListener("DOMContentLoaded", function () {
+
+    const serviceCheckboxes = document.querySelectorAll(
+        ".service-checkbox"
+    );
+
+    const summaryServices = document.getElementById(
+        "summary-services"
+    );
+
+    const summaryDuration = document.getElementById(
+        "summary-duration"
+    );
+
+    const summaryPrice = document.getElementById(
+        "summary-price"
+    );
+
+    function updateAppointmentSummary() {
+
+        let totalPriceCents = 0;
+        let totalDurationMinutes = 0;
+        let selectedServiceNames = [];
+
+        serviceCheckboxes.forEach(function (checkbox) {
+
+            if (checkbox.checked) {
+
+                const price = Number(
+                    checkbox.dataset.price
+                );
+
+                const duration = Number(
+                    checkbox.dataset.duration
+                );
+
+                const serviceName = checkbox
+                    .closest(".service-option")
+                    .querySelector("strong")
+                    .textContent.trim();
+
+                totalPriceCents += price;
+                totalDurationMinutes += duration;
+
+                selectedServiceNames.push(serviceName);
+            }
+        });
+
+        // Update selected service names
+        summaryServices.textContent =
+            selectedServiceNames.length > 0
+                ? selectedServiceNames.join(", ")
+                : "No services selected";
+
+        // Update total duration
+        summaryDuration.textContent =
+            totalDurationMinutes + " minutes";
+
+        // Convert cents into dollars
+        summaryPrice.textContent =
+            "$" + (totalPriceCents / 100).toFixed(2);
+    }
+
+    // Listen for service checkbox changes
+    serviceCheckboxes.forEach(function (checkbox) {
+
+        checkbox.addEventListener(
+            "change",
+            updateAppointmentSummary
+        );
+    });
+
+    // Initialize the summary when the page loads
+    updateAppointmentSummary();
+
+});
+

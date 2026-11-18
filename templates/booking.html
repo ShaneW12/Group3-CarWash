@@ -106,64 +106,46 @@
 
                 </div>
 
-                <!-- Services -->
-                <div class="form-section">
+                
 
-                    <h2>2. Choose Your Services</h2>
-
-                    <p class="form-description">
-                        Select all services you would like.
-                    </p>
-
+            <!-- Services -->
+            <div class="form-section">
+            
+                <h2>2. Choose Your Services</h2>
+            
+                <p class="form-description">
+                    Select all services you would like.
+                </p>
+            
+                {% for service in available_services %}
+            
                     <label class="service-option">
-                        <input type="checkbox" name="service" value="basic-wash">
+                        <input
+                            type="checkbox"
+                            name="service"
+                            value="{{ service.code }}"
+                            data-price="{{ service.price_cents }}"
+                            data-duration="{{ service.duration_minutes }}"
+                            class="service-checkbox"
+                        >
+                    
                         <span>
-                            <strong>Basic Wash</strong>
-                            <small>$15 • 15 minutes</small>
+                            <strong>{{ service.name }}</strong>
+                        
+                            <small>
+                                ${{ service.price_dollars|floatformat:2 }}
+                                • {{ service.duration_minutes }} minutes
+                            </small>
                         </span>
                     </label>
-
-                    <label class="service-option">
-                        <input type="checkbox" name="service" value="triple-foam">
-                        <span>
-                            <strong>Triple Foam</strong>
-                            <small>+$5 • +5 minutes</small>
-                        </span>
-                    </label>
-
-                    <label class="service-option">
-                        <input type="checkbox" name="service" value="undercarriage">
-                        <span>
-                            <strong>Undercarriage Wash</strong>
-                            <small>+$7 • +5 minutes</small>
-                        </span>
-                    </label>
-
-                    <label class="service-option">
-                        <input type="checkbox" name="service" value="vacuum">
-                        <span>
-                            <strong>Interior Vacuum</strong>
-                            <small>+$10 • +10 minutes</small>
-                        </span>
-                    </label>
-
-                    <label class="service-option">
-                        <input type="checkbox" name="service" value="detail">
-                        <span>
-                            <strong>Interior Detail</strong>
-                            <small>+$40 • +30 minutes</small>
-                        </span>
-                    </label>
-
-                    <label class="service-option">
-                        <input type="checkbox" name="service" value="tire-shine">
-                        <span>
-                            <strong>Tire Shine</strong>
-                            <small>+$5 • +5 minutes</small>
-                        </span>
-                    </label>
-
-                </div>
+                
+                {% empty %}
+                
+                    <p>No services are currently available.</p>
+                
+                {% endfor %}
+                
+            </div>
 
                 <!-- Customer Information -->
                 <div class="form-section">
@@ -253,27 +235,36 @@
 
                 </div>
 
+                
+                
                 <!-- Appointment Summary -->
                 <div class="appointment-summary">
-
+                
                     <h2>Appointment Summary</h2>
-
+                
                     <div class="summary-row">
                         <span>Services</span>
-                        <span>Basic Wash</span>
+                        <span id="summary-services">
+                            No services selected
+                        </span>
                     </div>
-
+                
                     <div class="summary-row">
                         <span>Estimated Duration</span>
-                        <span>15 minutes</span>
+                        <span id="summary-duration">
+                            0 minutes
+                        </span>
                     </div>
-
+                
                     <div class="summary-row total">
                         <span>Total</span>
-                        <span>$15.00</span>
+                        <span id="summary-price">
+                            $0.00
+                        </span>
                     </div>
 
-                </div>
+</div>
+
 
                 <!-- Submit -->
                 <button

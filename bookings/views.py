@@ -122,7 +122,12 @@ def logout(request):
 
 # Appointment Management - Create
 def booking(request):
-    if request.method == "POST":
+     available_services = list(Service.objects.all())
+     context = {
+        "vehicle_years": range(date.today().year, 1995, -1),
+        "available_services": available_services,
+      }
+     if request.method == "POST":
         first_name = request.POST.get("first_name", "").strip()
         last_name = request.POST.get("last_name", "").strip()
         email = request.POST.get("email", "").strip().lower()
@@ -142,7 +147,7 @@ def booking(request):
         vehicle_model = request.POST.get("vehicle_model", "").strip()
         vehicle_type = request.POST.get("vehicle_type", "").strip()
 
-        available_services = list(Service.objects.all())
+
 
         allowed_services = {
             service.code for service in available_services
@@ -177,14 +182,14 @@ def booking(request):
                 request,
                 "Please complete all booking fields correctly."
             )
-            return render(request, "booking.html")
+            return render(request, "booking.html",context)
 
         if appointment_date < today_date.today():
             messages.error(
                 request,
                 "Please choose today or a future appointment date."
             )
-            return render(request, "booking.html")
+            return render(request, "booking.html",context)
         
         
         # Retrieve selected services from MongoDB
@@ -234,9 +239,7 @@ def booking(request):
                 request,
                 "Please check your appointment information."
             )
-            return render(request, "booking.html", {
-    "vehicle_years": vehicle_years
-})
+            return render(request, "booking.html", context)
 
         messages.success(
             request,
@@ -244,9 +247,7 @@ def booking(request):
         )
         return redirect("booking")
 
-    return render(request, "booking.html", {
-    "vehicle_years": vehicle_years
-})
+     return render(request, "booking.html", context)
 
 
 def signup(request):
