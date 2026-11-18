@@ -136,9 +136,10 @@ def booking(request):
         appointment_date = parse_date(request.POST.get("date", ""))
         appointment_time = parse_time(request.POST.get("time", ""))
 
-        vehicle_year = request.POST.get("vehicle_year", "")
+        vehicle_year = request.POST.get("vehicle_year", "").strip()
         vehicle_make = request.POST.get("vehicle_make", "").strip()
         vehicle_model = request.POST.get("vehicle_model", "").strip()
+        vehicle_type = request.POST.get("vehicle_type", "").strip()
 
         allowed_services = {
             "basic-wash",
@@ -148,19 +149,31 @@ def booking(request):
             "detail",
             "tire-shine",
         }
+        allowed_vehicle_types = {
+            "sedan",
+            "suv",
+            "truck",
+            "coupe",
+            "hatchback",
+            "van",
+            "wagon",
+            "other",
+        }
 
         if (
             not first_name
-            or not last_name
-            or not email
-            or not phone
-            or not vehicle_year
-            or not vehicle_make
-            or not vehicle_model
-            or not selected_services
-            or any(s not in allowed_services for s in selected_services)
-            or not appointment_date
-            or not appointment_time
+        or not last_name
+        or not email
+        or not phone
+        or not vehicle_year.isdigit()
+        or not 1996 <= int(vehicle_year) <= date.today().year
+        or not vehicle_make
+        or not vehicle_model
+        or vehicle_type not in allowed_vehicle_types
+        or not selected_services
+        or any(s not in allowed_services for s in selected_services)
+        or not appointment_date
+        or not appointment_time
         ):
             messages.error(
                 request,
@@ -181,13 +194,15 @@ def booking(request):
     customer_name=f"{first_name} {last_name}",
     email=email,
     phone=phone,
+    vehicle_year=int(vehicle_year),
     vehicle_make=vehicle_make,
     vehicle_model=vehicle_model,
+    vehicle_type=vehicle_type,
     service=", ".join(selected_services),
     appointment_date=appointment_date,
     appointment_time=appointment_time,
     status="Scheduled",
-)
+    )
 
         try:
             appointment.full_clean()
@@ -197,7 +212,9 @@ def booking(request):
                 request,
                 "Please check your appointment information."
             )
-            return render(request, "booking.html")
+            return render(request, "booking.html", {
+    "vehicle_years": vehicle_years
+})
 
         messages.success(
             request,
@@ -205,7 +222,9 @@ def booking(request):
         )
         return redirect("booking")
 
-    return render(request, "booking.html")
+    return render(request, "booking.html", {
+    "vehicle_years": vehicle_years
+})
 
 
 def signup(request):

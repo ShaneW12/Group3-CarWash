@@ -1,5 +1,6 @@
 
 {% extends 'base.html' %}
+{% load static %}
 
 {% block content %}
 
@@ -56,6 +57,7 @@
                     <select
                         id="vehicle-make"
                         name="vehicle_make"
+                        data-url="{% url 'vehicle_makes' %}"
                         required
                         disabled
                     >
@@ -70,6 +72,7 @@
                     <select
                         id="vehicle-model"
                         name="vehicle_model"
+                        data-url="{% url 'vehicle_models' %}"
                         required
                         disabled
                     >
@@ -285,5 +288,7 @@
         </section>
 
     </main>
+    <script src="{% static 'js/booking.js' %}" defer></script>
+    
 
 {% endblock %}
