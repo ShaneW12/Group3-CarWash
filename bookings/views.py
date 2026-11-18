@@ -17,6 +17,7 @@ from django.views.decorators.http import require_GET
 from .nhtsa import get_vehicle_makes, get_vehicle_models
 
 from .models import Appointment
+from services.models import Service
 
 vehicle_years = range(date.today().year, 1995, -1)
 
@@ -141,13 +142,10 @@ def booking(request):
         vehicle_model = request.POST.get("vehicle_model", "").strip()
         vehicle_type = request.POST.get("vehicle_type", "").strip()
 
+        available_services = list(Service.objects.all())
+
         allowed_services = {
-            "basic-wash",
-            "triple-foam",
-            "undercarriage",
-            "vacuum",
-            "detail",
-            "tire-shine",
+            service.code for service in available_services
         }
         allowed_vehicle_types = {
             "sedan",
@@ -187,22 +185,46 @@ def booking(request):
                 "Please choose today or a future appointment date."
             )
             return render(request, "booking.html")
-
         
+        
+        # Retrieve selected services from MongoDB
+        selected_service_objects = [
+            service
+            for service in available_services
+            if service.code in selected_services
+        ]
 
+        # Calculate total price
+        total_price_cents = sum(
+            service.price_cents
+            for service in selected_service_objects
+        )
+
+        # Calculate total duration
+        total_duration_minutes = sum(
+            service.duration_minutes
+            for service in selected_service_objects
+        )
+
+        # Create appointment
+        
         appointment = Appointment(
-    customer_name=f"{first_name} {last_name}",
-    email=email,
-    phone=phone,
-    vehicle_year=int(vehicle_year),
-    vehicle_make=vehicle_make,
-    vehicle_model=vehicle_model,
-    vehicle_type=vehicle_type,
-    service=", ".join(selected_services),
-    appointment_date=appointment_date,
-    appointment_time=appointment_time,
-    status="Scheduled",
-    )
+            customer_name=f"{first_name} {last_name}",
+            email=email,
+            phone=phone,
+            vehicle_year=int(vehicle_year),
+            vehicle_make=vehicle_make,
+            vehicle_model=vehicle_model,
+            vehicle_type=vehicle_type,
+            service=", ".join(selected_services),
+            total_price_cents=total_price_cents,
+            total_duration_minutes=total_duration_minutes,
+            appointment_date=appointment_date,
+            appointment_time=appointment_time,
+            status="Scheduled",
+        )
+
+
 
         try:
             appointment.full_clean()
