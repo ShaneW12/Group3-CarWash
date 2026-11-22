@@ -13,10 +13,12 @@ from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_POST
 from django.http import JsonResponse
 from django.views.decorators.http import require_GET
+from customers.models import Vehicle
 
 from .nhtsa import get_vehicle_makes, get_vehicle_models
 
 from .models import Appointment
+from services.models import Service
 
 vehicle_years = range(date.today().year, 1995, -1)
 
@@ -121,73 +123,175 @@ def logout(request):
 
 # Appointment Management - Create
 def booking(request):
-    if request.method == "POST":
-        first_name = request.POST.get("first_name", "").strip()
-        last_name = request.POST.get("last_name", "").strip()
-        email = request.POST.get("email", "").strip().lower()
-        # Signed-in customers can only create bookings for their own account.
-        if request.user.is_authenticated:
-            email = request.user.email.lower()
-        phone = request.POST.get("phone", "").strip()
+     available_services = list(Service.objects.all())
 
-        
+    # Only retrieve vehicles belonging to this customer
+     customer_vehicles = (
+        list(Vehicle.objects.filter(customer=request.user))
+        if request.user.is_authenticated
+        else []
+    )
+
+     context = {
+        "vehicle_years": vehicle_years,
+        "available_services": available_services,
+        "customer_vehicles": customer_vehicles,
+    }
+     
+     if request.method == "POST":
+        # SERVICE SELECTION
         selected_services = request.POST.getlist("service")
 
-        appointment_date = parse_date(request.POST.get("date", ""))
-        appointment_time = parse_time(request.POST.get("time", ""))
+        # APPOINTMENT DATE AND TIME
+        appointment_date = parse_date(
+            request.POST.get("date", "")
+        )
 
-        vehicle_year = request.POST.get("vehicle_year", "")
-        vehicle_make = request.POST.get("vehicle_make", "").strip()
-        vehicle_model = request.POST.get("vehicle_model", "").strip()
+        appointment_time = parse_time(
+            request.POST.get("time", "")
+        )
+        
+        # CUSTOMER INFORMATION
+        if request.user.is_authenticated:
+            first_name = request.user.first_name.strip()
+            last_name = request.user.last_name.strip()
+            email = request.user.email.strip().lower()
+            phone = request.user.phone.strip()
+        else:
+            first_name = request.POST.get("first_name", "").strip()
+            last_name = request.POST.get("last_name", "").strip()
+            email = request.POST.get("email", "").strip().lower()
+            phone = request.POST.get("phone", "").strip()
+
+        # VEHICLE INFORMATION
+        if request.user.is_authenticated:
+
+            saved_vehicle_id = request.POST.get(
+                "saved_vehicle", ""
+            ).strip()
+
+            # Only allow vehicles owned by this customer
+            selected_vehicle = next(
+                (
+                    vehicle for vehicle in customer_vehicles
+                    if str(vehicle.pk) == saved_vehicle_id
+                ),
+                None
+            )
+
+            if selected_vehicle is None:
+                messages.error(
+                    request,
+                    "Please select one of your saved vehicles."
+                )
+                return render(request, "booking.html", context)
+
+            vehicle_year = str(selected_vehicle.year)
+            vehicle_make = selected_vehicle.make
+            vehicle_model = selected_vehicle.model
+            vehicle_type = selected_vehicle.vehicle_type
+
+        else:
+            vehicle_year = request.POST.get(
+                "vehicle_year", ""
+            ).strip()
+
+            vehicle_make = request.POST.get(
+                "vehicle_make", ""
+            ).strip()
+
+            vehicle_model = request.POST.get(
+                "vehicle_model", ""
+            ).strip()
+
+            vehicle_type = request.POST.get(
+                "vehicle_type", ""
+            ).strip()
+
+
+
 
         allowed_services = {
-            "basic-wash",
-            "triple-foam",
-            "undercarriage",
-            "vacuum",
-            "detail",
-            "tire-shine",
+            service.code for service in available_services
+        }
+        allowed_vehicle_types = {
+            "sedan",
+            "suv",
+            "truck",
+            "coupe",
+            "hatchback",
+            "van",
+            "wagon",
+            "other",
         }
 
         if (
             not first_name
-            or not last_name
-            or not email
-            or not phone
-            or not vehicle_year
-            or not vehicle_make
-            or not vehicle_model
-            or not selected_services
-            or any(s not in allowed_services for s in selected_services)
-            or not appointment_date
-            or not appointment_time
+        or not last_name
+        or not email
+        or not phone
+        or not vehicle_year.isdigit()
+        or not 1996 <= int(vehicle_year) <= date.today().year
+        or not vehicle_make
+        or not vehicle_model
+        or vehicle_type not in allowed_vehicle_types
+        or not selected_services
+        or any(s not in allowed_services for s in selected_services)
+        or not appointment_date
+        or not appointment_time
         ):
             messages.error(
                 request,
                 "Please complete all booking fields correctly."
             )
-            return render(request, "booking.html")
+            return render(request, "booking.html",context)
 
         if appointment_date < today_date.today():
             messages.error(
                 request,
                 "Please choose today or a future appointment date."
             )
-            return render(request, "booking.html")
-
+            return render(request, "booking.html",context)
         
+        
+        # Retrieve selected services from MongoDB
+        selected_service_objects = [
+            service
+            for service in available_services
+            if service.code in selected_services
+        ]
 
+        # Calculate total price
+        total_price_cents = sum(
+            service.price_cents
+            for service in selected_service_objects
+        )
+
+        # Calculate total duration
+        total_duration_minutes = sum(
+            service.duration_minutes
+            for service in selected_service_objects
+        )
+
+        # Create appointment
+        
         appointment = Appointment(
-    customer_name=f"{first_name} {last_name}",
-    email=email,
-    phone=phone,
-    vehicle_make=vehicle_make,
-    vehicle_model=vehicle_model,
-    service=", ".join(selected_services),
-    appointment_date=appointment_date,
-    appointment_time=appointment_time,
-    status="Scheduled",
-)
+            customer_name=f"{first_name} {last_name}",
+            email=email,
+            phone=phone,
+            vehicle_year=int(vehicle_year),
+            vehicle_make=vehicle_make,
+            vehicle_model=vehicle_model,
+            vehicle_type=vehicle_type,
+            service=", ".join(selected_services),
+            total_price_cents=total_price_cents,
+            total_duration_minutes=total_duration_minutes,
+            appointment_date=appointment_date,
+            appointment_time=appointment_time,
+            status="Scheduled",
+        )
+
+
 
         try:
             appointment.full_clean()
@@ -197,7 +301,7 @@ def booking(request):
                 request,
                 "Please check your appointment information."
             )
-            return render(request, "booking.html")
+            return render(request, "booking.html", context)
 
         messages.success(
             request,
@@ -205,7 +309,7 @@ def booking(request):
         )
         return redirect("booking")
 
-    return render(request, "booking.html")
+     return render(request, "booking.html", context)
 
 
 def signup(request):
@@ -213,34 +317,68 @@ def signup(request):
         first_name = request.POST.get("first_name", "").strip()
         last_name = request.POST.get("last_name", "").strip()
         email = request.POST.get("email", "").strip().lower()
+        phone = request.POST.get("phone", "").strip()
         password = request.POST.get("password", "")
         confirm = request.POST.get("confirm_password", "")
 
-        if not all([first_name, last_name, email, password]) or password != confirm:
-            messages.error(request, "Complete all fields and make sure passwords match.")
+        if (
+            not first_name
+            or not last_name
+            or not email
+            or not phone
+            or not password
+            or password != confirm
+        ):
+            messages.error(
+                request,
+                "Please complete all fields and make sure passwords match."
+            )
             return render(request, "signup.html")
+
         User = get_user_model()
+
         if User.objects.filter(email__iexact=email).exists():
-            messages.error(request, "An account with this email already exists.")
+            messages.error(
+                request,
+                "An account with this email already exists."
+            )
             return render(request, "signup.html")
+
         try:
             validate_password(password)
+
             with transaction.atomic():
-                # In this original SQLite branch the default User model uses username.
-                # Store email as username so the account has a stable unique login.
                 user = User.objects.create_user(
-                    username=email, email=email, password=password,
-                    first_name=first_name, last_name=last_name,
+                    username=email,
+                    email=email,
+                    password=password,
+                    first_name=first_name,
+                    last_name=last_name,
+                    phone=phone,
                 )
+
         except ValidationError as exc:
-            messages.error(request, " ".join(exc.messages))
+            messages.error(
+                request,
+                " ".join(exc.messages)
+            )
             return render(request, "signup.html")
+
         except IntegrityError:
-            messages.error(request, "That account already exists.")
+            messages.error(
+                request,
+                "That account already exists."
+            )
             return render(request, "signup.html")
+
         auth_login(request, user)
-        messages.success(request, "Account created successfully.")
+
+        messages.success(
+            request,
+            "Account created successfully."
+        )
         return redirect("my_appointments")
+
     return render(request, "signup.html")
 
 

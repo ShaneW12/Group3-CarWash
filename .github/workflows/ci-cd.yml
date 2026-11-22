@@ -6,13 +6,27 @@ on:
     branches: [main]
   pull_request:
     branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  PYTHON_VERSION: "3.12"
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
+  PYTHONDONTWRITEBYTECODE: "1"
+  PYTHONUNBUFFERED: "1"
 
 jobs:
+
+  # =========================
+  # STAGE 1: SETUP
+  # =========================
   Setup:
     name: Setup
     runs-on: ubuntu-latest
-    env:
-      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+    timeout-minutes: 10
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v6
@@ -20,14 +34,22 @@ jobs:
       - name: Setup Python
         uses: actions/setup-python@v6
         with:
-          python-version: "3.12"
+          python-version: ${{ env.PYTHON_VERSION }}
 
+      - name: Verify Python installation
+        run: |
+          python --version
+          python -m pip --version
+
+  # =========================
+  # STAGE 2: DEPENDENCIES
+  # =========================
   Dependencies:
     name: Dependencies
     needs: Setup
     runs-on: ubuntu-latest
-    env:
-      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+    timeout-minutes: 15
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v6
@@ -35,20 +57,33 @@ jobs:
       - name: Setup Python
         uses: actions/setup-python@v6
         with:
-          python-version: "3.12"
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: pip
+          cache-dependency-path: requirements.txt
 
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install -r requirements.txt
+          python -m pip install -r requirements.txt
 
+      - name: Verify dependency compatibility
+        run: python -m pip check
+
+      - name: Verify Django installation
+        run: python -m django --version
+
+  # =========================
+  # STAGE 3: TEST
+  # =========================
   Test:
     name: Test
     needs: Dependencies
     runs-on: ubuntu-latest
+    timeout-minutes: 20
+
     env:
       MONGODB_URI: ${{ secrets.MONGODB_URI }}
-      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+      MONGODB_TEST_DB_NAME: cleanride_ci_${{ github.run_id }}_${{ github.run_attempt }}
 
     steps:
       - name: Checkout repository
@@ -57,27 +92,69 @@ jobs:
       - name: Setup Python
         uses: actions/setup-python@v6
         with:
-          python-version: "3.12"
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: pip
+          cache-dependency-path: requirements.txt
 
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install -r requirements.txt
+          python -m pip install -r requirements.txt
+
+      - name: Verify MongoDB configuration
+        run: |
+          if [ -z "$MONGODB_URI" ]; then
+            echo "::error::MONGODB_URI secret is missing."
+            exit 1
+          fi
+          echo "MongoDB connection secret is configured."
+
+      - name: Check Python syntax
+        run: |
+          python -m compileall -q bookings customers services config
 
       - name: Django system check
         run: python manage.py check
 
-      - name: Run Django tests
-        run: python manage.py test
+      - name: Check for missing model migrations
+        run: |
+          python manage.py makemigrations --check --dry-run
 
+      - name: Run CleanRide Django tests
+        shell: bash
+        run: |
+          set -o pipefail
+          python manage.py test --verbosity 2 --noinput 2>&1 | tee test-results.log
+
+      - name: Upload test logs on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cleanride-test-results
+          path: test-results.log
+          if-no-files-found: ignore
+          retention-days: 7
+
+      - name: Confirm test completion
+        if: success()
+        run: |
+          echo "All CleanRide Django tests passed."
+          echo "Authentication, vehicle, service and booking tests completed."
+
+  # =========================
+  # STAGE 4: DEPLOY
+  # =========================
   Deploy:
     name: Deploy
     needs: Test
     runs-on: ubuntu-latest
-    env:
-      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+    timeout-minutes: 5
+
     steps:
-      - name: Deployment stage
+      - name: Deployment readiness stage
         run: |
+          echo "Setup stage passed."
+          echo "Dependencies stage passed."
           echo "Test stage passed."
-          echo "CleanRide deployment stage completed."
+          echo "CleanRide passed CI validation."
+          echo "No production deployment is configured yet."

@@ -90,6 +90,12 @@ DATABASES = {
         "OPTIONS": {
             "tlsCAFile": certifi.where(),
         },
+        "TEST": {
+            "NAME": os.getenv(
+        "MONGODB_TEST_DB_NAME",
+        "cleanride_ci_test"
+    ),
+        },
     }
 }
 

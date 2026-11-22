@@ -7,6 +7,12 @@ from django_mongodb_backend.fields import ObjectIdAutoField
 class User(AbstractUser):
     email = models.EmailField(unique=True)
 
+    phone = models.CharField(
+        max_length=20,
+        blank=True,
+        default=""
+    )
+
     USERNAME_FIELD = "email"
     REQUIRED_FIELDS = []
 
