@@ -39,4 +39,9 @@ path(
     views.vehicle_models,
     name="vehicle_models"
 ),
+path(
+    "api/booking/available-slots/",
+    views.available_booking_slots,
+    name="available_booking_slots"
+),
 ]
