@@ -1,0 +1,182 @@
+
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+
+<main class="booking-page">
+
+    <section class="booking-header">
+        <h1>Edit Vehicle</h1>
+
+        <p>
+            Update your saved vehicle information.
+        </p>
+    </section>
+
+    <section class="booking-container">
+
+        <div class="form-section">
+
+            <h2>
+                {{ vehicle.year }}
+                {{ vehicle.make }}
+                {{ vehicle.model }}
+            </h2>
+
+            <form
+                method="POST"
+                action="{% url 'edit_vehicle' vehicle.id %}"
+            >
+                {% csrf_token %}
+
+                <!-- Vehicle Year -->
+                <label for="vehicle-year">
+                    Vehicle Year
+                </label>
+
+                <select
+                    id="vehicle-year"
+                    name="vehicle_year"
+                    required
+                >
+                    {% for year in vehicle_years %}
+                        <option
+                            value="{{ year }}"
+                            {% if year == vehicle.year %}selected{% endif %}
+                        >
+                            {{ year }}
+                        </option>
+                    {% endfor %}
+                </select>
+
+                <!-- Vehicle Make -->
+                <label for="vehicle-make">
+                    Vehicle Make
+                </label>
+
+                <select
+                    id="vehicle-make"
+                    name="vehicle_make"
+                    data-url="{% url 'vehicle_makes' %}"
+                    required
+                >
+                    <option
+                        value="{{ vehicle.make }}"
+                        selected
+                    >
+                        {{ vehicle.make }}
+                    </option>
+                </select>
+
+                <!-- Vehicle Model -->
+                <label for="vehicle-model">
+                    Vehicle Model
+                </label>
+
+                <select
+                    id="vehicle-model"
+                    name="vehicle_model"
+                    data-url="{% url 'vehicle_models' %}"
+                    required
+                >
+                    <option
+                        value="{{ vehicle.model }}"
+                        selected
+                    >
+                        {{ vehicle.model }}
+                    </option>
+                </select>
+
+                <!-- Vehicle Type -->
+                <label for="vehicle-type">
+                    Vehicle Type
+                </label>
+
+                <select
+                    id="vehicle-type"
+                    name="vehicle_type"
+                    required
+                >
+                    <option value="sedan"
+                        {% if vehicle.vehicle_type == "sedan" %}selected{% endif %}>
+                        Sedan
+                    </option>
+
+                    <option value="suv"
+                        {% if vehicle.vehicle_type == "suv" %}selected{% endif %}>
+                        SUV
+                    </option>
+
+                    <option value="truck"
+                        {% if vehicle.vehicle_type == "truck" %}selected{% endif %}>
+                        Truck
+                    </option>
+
+                    <option value="coupe"
+                        {% if vehicle.vehicle_type == "coupe" %}selected{% endif %}>
+                        Coupe
+                    </option>
+
+                    <option value="hatchback"
+                        {% if vehicle.vehicle_type == "hatchback" %}selected{% endif %}>
+                        Hatchback
+                    </option>
+
+                    <option value="van"
+                        {% if vehicle.vehicle_type == "van" %}selected{% endif %}>
+                        Van
+                    </option>
+
+                    <option value="wagon"
+                        {% if vehicle.vehicle_type == "wagon" %}selected{% endif %}>
+                        Wagon
+                    </option>
+
+                    <option value="other"
+                        {% if vehicle.vehicle_type == "other" %}selected{% endif %}>
+                        Other
+                    </option>
+                </select>
+
+                <!-- License Plate -->
+                <label for="license-plate">
+                    License Plate
+                </label>
+
+                <input
+                    type="text"
+                    id="license-plate"
+                    name="license_plate"
+                    value="{{ vehicle.license_plate }}"
+                    maxlength="20"
+                    placeholder="Enter license plate"
+                >
+
+                <button
+                    type="submit"
+                    class="booking-button"
+                >
+                    Save Changes
+                </button>
+
+                <p>
+                    <a href="{% url 'my_vehicles' %}">
+                        Cancel and Return to My Vehicles
+                    </a>
+                </p>
+
+            </form>
+
+        </div>
+
+    </section>
+
+</main>
+
+<script
+    src="{% static 'js/my_vehicles.js' %}"
+    defer>
+</script>
+
+{% endblock %}
