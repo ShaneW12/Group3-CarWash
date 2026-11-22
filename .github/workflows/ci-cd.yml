@@ -83,6 +83,7 @@ jobs:
 
     env:
       MONGODB_URI: ${{ secrets.MONGODB_URI }}
+      MONGODB_TEST_DB_NAME: cleanride_ci_${{ github.run_id }}_${{ github.run_attempt }}
 
     steps:
       - name: Checkout repository
