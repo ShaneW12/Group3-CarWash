@@ -14,6 +14,7 @@ from django.views.decorators.http import require_POST
 from django.http import JsonResponse
 from django.views.decorators.http import require_GET
 from customers.models import Vehicle
+from .scheduling import get_available_slots, is_slot_available
 
 from .nhtsa import get_vehicle_makes, get_vehicle_models
 
@@ -273,6 +274,25 @@ def booking(request):
             for service in selected_service_objects
         )
 
+        # SERVER-SIDE APPOINTMENT AVAILABILITY CHECK
+        if not is_slot_available(
+            appointment_date,
+            appointment_time,
+            total_duration_minutes
+        ):
+            messages.error(
+                request,
+                "This appointment time is unavailable. "
+                "Please choose another time."
+            )
+
+            return render(
+                request,
+                "booking.html",
+                context
+            )
+
+
         # Create appointment
         
         appointment = Appointment(
@@ -425,3 +445,66 @@ def cancel_appointment(request, appointment_id):
         )
 
     return redirect("my_appointments")
+
+@require_GET
+def available_booking_slots(request):
+    """
+    Return available times for a date and selected services.
+    """
+
+    selected_date = parse_date(
+        request.GET.get("date", "")
+    )
+
+    service_codes = request.GET.getlist("service")
+
+    # Validate date and service selection
+    if not selected_date:
+        return JsonResponse(
+            {"error": "Please select a valid date."},
+            status=400
+        )
+
+    if not service_codes:
+        return JsonResponse(
+            {"error": "Please select at least one service."},
+            status=400
+        )
+
+    # Prevent duplicate service selections
+    if len(service_codes) != len(set(service_codes)):
+        return JsonResponse(
+            {"error": "Duplicate services are not allowed."},
+            status=400
+        )
+
+    # Retrieve services from MongoDB
+    services = list(
+        Service.objects.filter(code__in=service_codes)
+    )
+
+    # Ensure all requested services exist
+    if len(services) != len(service_codes):
+        return JsonResponse(
+            {"error": "Invalid service selection."},
+            status=400
+        )
+
+    # Calculate duration from database values
+    total_duration = sum(
+        service.duration_minutes
+        for service in services
+    )
+
+    # Calculate available time slots
+    available_slots = get_available_slots(
+        selected_date,
+        total_duration
+    )
+
+    return JsonResponse({
+        "date": selected_date.isoformat(),
+        "duration_minutes": total_duration,
+        "available_slots": available_slots,
+    })
+

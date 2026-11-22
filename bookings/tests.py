@@ -230,6 +230,57 @@ class AppointmentTests(TestCase):
             "Cancelled"
         )
 
+    def test_overlapping_booking_is_rejected(self):
+        self.client.force_login(self.user)
+
+        booking_date = date.today() + timedelta(days=3)
+
+        existing_count = Appointment.objects.count()
+
+        response = self.client.post(
+            reverse("booking"),
+            {
+                "saved_vehicle": str(self.vehicle.pk),
+                "service": ["standard-wash"],
+                "date": booking_date.isoformat(),
+                "time": "10:00",
+            }
+        )
+
+        self.assertEqual(response.status_code, 200)
+
+        self.assertEqual(
+            Appointment.objects.count(),
+            existing_count
+        )
+
+    def test_availability_api_excludes_booked_times(self):
+        booking_date = date.today() + timedelta(days=3)
+
+        response = self.client.get(
+            reverse("available_booking_slots"),
+            {
+                "date": booking_date.isoformat(),
+                "service": ["standard-wash"],
+            }
+        )
+
+        self.assertEqual(response.status_code, 200)
+
+        data = response.json()
+
+        self.assertEqual(data["duration_minutes"], 30)
+        self.assertNotIn(
+            "10:00",
+            data["available_slots"]
+        )
+        self.assertIn(
+            "10:30",
+            data["available_slots"]
+        )
+
+
+
 
 class CustomerFlowTests(TestCase):
 

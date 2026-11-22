@@ -254,3 +254,159 @@ document.addEventListener("DOMContentLoaded", function () {
 
 });
 
+
+/*
+ * CleanRide Smart Appointment Availability
+ */
+
+document.addEventListener("DOMContentLoaded", function () {
+
+    const dateInput = document.getElementById("date");
+    const timeSelect = document.getElementById("time");
+
+    const serviceCheckboxes = document.querySelectorAll(
+        ".service-checkbox"
+    );
+
+    const availabilityMessage = document.getElementById(
+        "availability-message"
+    );
+
+    if (!dateInput || !timeSelect) {
+        return;
+    }
+
+    let requestVersion = 0;
+
+    function resetTimes(message) {
+        timeSelect.replaceChildren(
+            new Option(message, "")
+        );
+
+        timeSelect.disabled = true;
+    }
+
+    async function updateAvailableTimes() {
+
+        // Invalidate older responses
+        const version = ++requestVersion;
+
+        const selectedServices = Array.from(
+            serviceCheckboxes
+        )
+        .filter(checkbox => checkbox.checked)
+        .map(checkbox => checkbox.value);
+
+        const selectedDate = dateInput.value;
+
+        if (!selectedDate || selectedServices.length === 0) {
+            resetTimes("Select services and a date first");
+
+            availabilityMessage.textContent =
+                "Choose your services and date to see available times.";
+
+            return;
+        }
+
+        resetTimes("Checking availability...");
+
+        availabilityMessage.textContent =
+            "Finding available appointments...";
+
+        const params = new URLSearchParams();
+
+        params.append("date", selectedDate);
+
+        selectedServices.forEach(code => {
+            params.append("service", code);
+        });
+
+        try {
+            const response = await fetch(
+                `${timeSelect.dataset.url}?${params.toString()}`
+            );
+
+            const data = await response.json();
+
+            // Ignore responses for outdated selections
+            if (version !== requestVersion) {
+                return;
+            }
+
+            if (!response.ok) {
+                throw new Error(
+                    data.error || "Unable to check availability."
+                );
+            }
+
+            resetTimes("Select an available time");
+
+            if (data.available_slots.length === 0) {
+
+                resetTimes("No available appointments");
+
+                availabilityMessage.textContent =
+                    "No appointments are available for this date. " +
+                    "Please choose another date.";
+
+                return;
+            }
+
+            data.available_slots.forEach(slot => {
+
+                const [hour, minute] = slot.split(":")
+                    .map(Number);
+
+                const formattedTime = new Date(
+                    2000, 0, 1, hour, minute
+                ).toLocaleTimeString("en-US", {
+                    hour: "numeric",
+                    minute: "2-digit"
+                });
+
+                timeSelect.add(
+                    new Option(formattedTime, slot)
+                );
+            });
+
+            timeSelect.disabled = false;
+
+            availabilityMessage.textContent =
+                `${data.available_slots.length} available ` +
+                `starting times found.`;
+
+        } catch (error) {
+
+            if (version !== requestVersion) {
+                return;
+            }
+
+            console.error(error);
+
+            resetTimes("Unable to load appointments");
+
+            availabilityMessage.textContent =
+                "Unable to check availability. Please try again.";
+        }
+    }
+
+    // Refresh availability when the date changes
+    dateInput.addEventListener(
+        "change",
+        updateAvailableTimes
+    );
+
+    // Refresh availability when services change
+    serviceCheckboxes.forEach(checkbox => {
+        checkbox.addEventListener(
+            "change",
+            updateAvailableTimes
+        );
+    });
+
+    // Check availability on page load
+    updateAvailableTimes();
+
+});
+
+
