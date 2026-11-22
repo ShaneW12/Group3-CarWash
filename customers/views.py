@@ -1,12 +1,15 @@
-
 from django.shortcuts import render, redirect
-from django.contrib import messages
 from django.contrib.auth import get_user_model
 from django.contrib.auth.password_validation import validate_password
-from django.core.exceptions import ValidationError
-from django.contrib.auth.decorators import login_required
 from .models import Vehicle
+from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib import messages
+from django.contrib.auth.decorators import login_required
+from django.views.decorators.http import require_POST
+from django.http import Http404
+from django.core.exceptions import ValidationError
 from datetime import date
+from bson import ObjectId
 
 User = get_user_model()
 
@@ -81,6 +84,139 @@ def signup(request):
         return redirect("login")
 
     return render(request, "signup.html")
+
+def get_customer_vehicle(request, vehicle_id):
+    # Reject invalid MongoDB ObjectIds
+    if not ObjectId.is_valid(vehicle_id):
+        raise Http404("Vehicle not found.")
+
+    return get_object_or_404(
+        Vehicle,
+        pk=ObjectId(vehicle_id),
+        customer=request.user
+    )
+
+@login_required(login_url="/login/")
+@require_POST
+def delete_vehicle(request, vehicle_id):
+
+    vehicle = get_customer_vehicle(request, vehicle_id)
+
+    vehicle.delete()
+
+    messages.success(
+        request,
+        "Vehicle deleted successfully!"
+    )
+
+    return redirect("my_vehicles")
+
+
+@login_required(login_url="/login/")
+def edit_vehicle(request, vehicle_id):
+
+    vehicle = get_customer_vehicle(request, vehicle_id)
+
+    vehicle_years = range(
+        date.today().year, 1995, -1
+    )
+
+    allowed_vehicle_types = {
+        "sedan",
+        "suv",
+        "truck",
+        "coupe",
+        "hatchback",
+        "van",
+        "wagon",
+        "other",
+    }
+
+    if request.method == "POST":
+
+        year = request.POST.get(
+            "vehicle_year", ""
+        ).strip()
+
+        make = request.POST.get(
+            "vehicle_make", ""
+        ).strip()
+
+        model = request.POST.get(
+            "vehicle_model", ""
+        ).strip()
+
+        vehicle_type = request.POST.get(
+            "vehicle_type", ""
+        ).strip()
+
+        license_plate = request.POST.get(
+            "license_plate", ""
+        ).strip().upper()
+
+        # Validate the updated vehicle details
+        if (
+            not year.isdigit()
+            or not 1996 <= int(year) <= date.today().year
+            or not make
+            or not model
+            or len(make) > 50
+            or len(model) > 50
+            or vehicle_type not in allowed_vehicle_types
+            or len(license_plate) > 20
+        ):
+            messages.error(
+                request,
+                "Please enter valid vehicle information."
+            )
+
+            return redirect(
+                "edit_vehicle",
+                vehicle_id=vehicle_id
+            )
+
+        # Update the existing MongoDB document
+        vehicle.year = int(year)
+        vehicle.make = make
+        vehicle.model = model
+        vehicle.vehicle_type = vehicle_type
+        vehicle.license_plate = license_plate
+
+        try:
+            vehicle.full_clean()
+            vehicle.save(update_fields=[
+                "year",
+                "make",
+                "model",
+                "vehicle_type",
+                "license_plate",
+            ])
+        except ValidationError:
+            messages.error(
+                request,
+                "Please check your vehicle information."
+            )
+            return redirect(
+                "edit_vehicle",
+                vehicle_id=vehicle_id
+            )
+
+        messages.success(
+            request,
+            "Vehicle updated successfully!"
+        )
+
+        return redirect("my_vehicles")
+
+    return render(
+        request,
+        "edit_vehicle.html",
+        {
+            "vehicle": vehicle,
+            "vehicle_years": vehicle_years,
+        }
+    )
+
 
 
 @login_required(login_url="/login/")

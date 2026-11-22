@@ -139,7 +139,17 @@ def booking(request):
     }
      
      if request.method == "POST":
+        # SERVICE SELECTION
+        selected_services = request.POST.getlist("service")
 
+        # APPOINTMENT DATE AND TIME
+        appointment_date = parse_date(
+            request.POST.get("date", "")
+        )
+
+        appointment_time = parse_time(
+            request.POST.get("time", "")
+        )
         
         # CUSTOMER INFORMATION
         if request.user.is_authenticated:

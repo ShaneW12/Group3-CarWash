@@ -90,6 +90,9 @@ DATABASES = {
         "OPTIONS": {
             "tlsCAFile": certifi.where(),
         },
+        "TEST": {
+            "NAME": "cleanride_ci_test",
+        },
     }
 }
 

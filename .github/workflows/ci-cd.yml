@@ -13,7 +13,7 @@ permissions:
 
 env:
   PYTHON_VERSION: "3.12"
-  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
   PYTHONDONTWRITEBYTECODE: "1"
   PYTHONUNBUFFERED: "1"
 
@@ -115,15 +115,30 @@ jobs:
       - name: Django system check
         run: python manage.py check
 
-      - name: Run CleanRide Django tests
+      - name: Check for missing model migrations
         run: |
-          python manage.py test --verbosity 2
+          python manage.py makemigrations --check --dry-run
+
+      - name: Run CleanRide Django tests
+        shell: bash
+        run: |
+          set -o pipefail
+          python manage.py test --verbosity 2 --noinput 2>&1 | tee test-results.log
+
+      - name: Upload test logs on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cleanride-test-results
+          path: test-results.log
+          if-no-files-found: ignore
+          retention-days: 7
 
       - name: Confirm test completion
         if: success()
         run: |
           echo "All CleanRide Django tests passed."
-          echo "Authentication and booking test suite completed."
+          echo "Authentication, vehicle, service and booking tests completed."
 
   # =========================
   # STAGE 4: DEPLOY
@@ -135,10 +150,10 @@ jobs:
     timeout-minutes: 5
 
     steps:
-      - name: Deployment stage
+      - name: Deployment readiness stage
         run: |
           echo "Setup stage passed."
           echo "Dependencies stage passed."
           echo "Test stage passed."
-          echo "CleanRide deployment stage completed."
-          echo "Application is ready for future deployment."
+          echo "CleanRide passed CI validation."
+          echo "No production deployment is configured yet."
