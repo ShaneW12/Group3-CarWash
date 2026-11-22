@@ -127,14 +127,23 @@ def booking(request):
         "vehicle_years": range(date.today().year, 1995, -1),
         "available_services": available_services,
       }
+     
      if request.method == "POST":
-        first_name = request.POST.get("first_name", "").strip()
-        last_name = request.POST.get("last_name", "").strip()
-        email = request.POST.get("email", "").strip().lower()
-        # Signed-in customers can only create bookings for their own account.
+
         if request.user.is_authenticated:
-            email = request.user.email.lower()
-        phone = request.POST.get("phone", "").strip()
+            # Retrieve personal information from the account
+            first_name = request.user.first_name.strip()
+            last_name = request.user.last_name.strip()
+            email = request.user.email.strip().lower()
+            phone = request.user.phone.strip()
+
+
+        else:
+            # Guest users enter their information manually
+            first_name = request.POST.get("first_name", "").strip()
+            last_name = request.POST.get("last_name", "").strip()
+            email = request.POST.get("email", "").strip().lower()
+            phone = request.POST.get( "phone", "").strip()
 
         
         selected_services = request.POST.getlist("service")
@@ -255,34 +264,68 @@ def signup(request):
         first_name = request.POST.get("first_name", "").strip()
         last_name = request.POST.get("last_name", "").strip()
         email = request.POST.get("email", "").strip().lower()
+        phone = request.POST.get("phone", "").strip()
         password = request.POST.get("password", "")
         confirm = request.POST.get("confirm_password", "")
 
-        if not all([first_name, last_name, email, password]) or password != confirm:
-            messages.error(request, "Complete all fields and make sure passwords match.")
+        if (
+            not first_name
+            or not last_name
+            or not email
+            or not phone
+            or not password
+            or password != confirm
+        ):
+            messages.error(
+                request,
+                "Please complete all fields and make sure passwords match."
+            )
             return render(request, "signup.html")
+
         User = get_user_model()
+
         if User.objects.filter(email__iexact=email).exists():
-            messages.error(request, "An account with this email already exists.")
+            messages.error(
+                request,
+                "An account with this email already exists."
+            )
             return render(request, "signup.html")
+
         try:
             validate_password(password)
+
             with transaction.atomic():
-                # In this original SQLite branch the default User model uses username.
-                # Store email as username so the account has a stable unique login.
                 user = User.objects.create_user(
-                    username=email, email=email, password=password,
-                    first_name=first_name, last_name=last_name,
+                    username=email,
+                    email=email,
+                    password=password,
+                    first_name=first_name,
+                    last_name=last_name,
+                    phone=phone,
                 )
+
         except ValidationError as exc:
-            messages.error(request, " ".join(exc.messages))
+            messages.error(
+                request,
+                " ".join(exc.messages)
+            )
             return render(request, "signup.html")
+
         except IntegrityError:
-            messages.error(request, "That account already exists.")
+            messages.error(
+                request,
+                "That account already exists."
+            )
             return render(request, "signup.html")
+
         auth_login(request, user)
-        messages.success(request, "Account created successfully.")
+
+        messages.success(
+            request,
+            "Account created successfully."
+        )
         return redirect("my_appointments")
+
     return render(request, "signup.html")
 
 

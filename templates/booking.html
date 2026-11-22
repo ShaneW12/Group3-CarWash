@@ -147,68 +147,94 @@
                 
             </div>
 
+               
                 <!-- Customer Information -->
                 <div class="form-section">
-
+                
                     <h2>Customer Information</h2>
-
-                    <p class="form-description">
-                        Enter your contact information so we can send you an appointment confirmation.
-                    </p>
-
-                    <label for="first-name">First Name</label>
-                    <input
-                        type="text"
-                        id="first-name"
-                        name="first_name"
-                        placeholder="Enter your first name"
-                        required
-                    >
-
-                    <label for="last-name">Last Name</label>
-                    <input
-                        type="text"
-                        id="last-name"
-                        name="last_name"
-                        placeholder="Enter your last name"
-                        required
-                    >
-
-                    <label for="email">Email</label>
-                    <input
-                        type="email"
-                        id="email"
-                        name="email"
-                        placeholder="Enter your email"
-                        required
-                    >
-
-                    <label for="phone">Phone Number</label>
-                    <input
-                        type="tel"
-                        id="phone"
-                        name="phone"
-                        placeholder="Enter your phone number"
-                        required
-                    >
-
+                
+                    {% if user.is_authenticated %}
+                
+                        <!-- Logged-in customer information -->
+                        <p class="form-description">
+                            Your account information will be used
+                            for this appointment.
+                        </p>
+                    
+                        <p>
+                            <strong>Booking as:</strong>
+                            {{ user.first_name }} {{ user.last_name }}
+                        </p>
+                    
+                        <p>
+                            <strong>Email:</strong>
+                            {{ user.email }}
+                        </p>
+                    
+                    {% else %}
+                    
+                        <!-- Guest customer information -->
+                        <p class="form-description">
+                            Enter your contact information so we can
+                            send you an appointment confirmation.
+                        </p>
+                    
+                        <label for="first-name">First Name</label>
+                        <input
+                            type="text"
+                            id="first-name"
+                            name="first_name"
+                            placeholder="Enter your first name"
+                            required
+                        >
+                    
+                        <label for="last-name">Last Name</label>
+                        <input
+                            type="text"
+                            id="last-name"
+                            name="last_name"
+                            placeholder="Enter your last name"
+                            required
+                        >
+                    
+                        <label for="email">Email</label>
+                        <input
+                            type="email"
+                            id="email"
+                            name="email"
+                            placeholder="Enter your email"
+                            required
+                        >
+                    
+                        <label for="phone">Phone Number</label>
+                        <input
+                            type="tel"
+                            id="phone"
+                            name="phone"
+                            placeholder="Enter your phone number"
+                            required
+                        >
+                    
+                    {% endif %}
+                    
                 </div>
-
+                
                 <!-- Date -->
                 <div class="form-section">
-
+                
                     <h2>3. Choose a Date</h2>
-
+                
                     <label for="date">Appointment Date</label>
-
+                
                     <input
                         type="date"
                         id="date"
                         name="date"
                         required
                     >
-
+                
                 </div>
+
 
                 <!-- Time -->
                 <div class="form-section">
