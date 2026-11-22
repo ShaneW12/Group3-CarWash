@@ -13,6 +13,7 @@ from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_POST
 from django.http import JsonResponse
 from django.views.decorators.http import require_GET
+from customers.models import Vehicle
 
 from .nhtsa import get_vehicle_makes, get_vehicle_models
 
@@ -123,38 +124,80 @@ def logout(request):
 # Appointment Management - Create
 def booking(request):
      available_services = list(Service.objects.all())
+
+    # Only retrieve vehicles belonging to this customer
+     customer_vehicles = (
+        list(Vehicle.objects.filter(customer=request.user))
+        if request.user.is_authenticated
+        else []
+    )
+
      context = {
-        "vehicle_years": range(date.today().year, 1995, -1),
+        "vehicle_years": vehicle_years,
         "available_services": available_services,
-      }
+        "customer_vehicles": customer_vehicles,
+    }
      
      if request.method == "POST":
 
+        
+        # CUSTOMER INFORMATION
         if request.user.is_authenticated:
-            # Retrieve personal information from the account
             first_name = request.user.first_name.strip()
             last_name = request.user.last_name.strip()
             email = request.user.email.strip().lower()
             phone = request.user.phone.strip()
-
-
         else:
-            # Guest users enter their information manually
             first_name = request.POST.get("first_name", "").strip()
             last_name = request.POST.get("last_name", "").strip()
             email = request.POST.get("email", "").strip().lower()
-            phone = request.POST.get( "phone", "").strip()
+            phone = request.POST.get("phone", "").strip()
 
-        
-        selected_services = request.POST.getlist("service")
+        # VEHICLE INFORMATION
+        if request.user.is_authenticated:
 
-        appointment_date = parse_date(request.POST.get("date", ""))
-        appointment_time = parse_time(request.POST.get("time", ""))
+            saved_vehicle_id = request.POST.get(
+                "saved_vehicle", ""
+            ).strip()
 
-        vehicle_year = request.POST.get("vehicle_year", "").strip()
-        vehicle_make = request.POST.get("vehicle_make", "").strip()
-        vehicle_model = request.POST.get("vehicle_model", "").strip()
-        vehicle_type = request.POST.get("vehicle_type", "").strip()
+            # Only allow vehicles owned by this customer
+            selected_vehicle = next(
+                (
+                    vehicle for vehicle in customer_vehicles
+                    if str(vehicle.pk) == saved_vehicle_id
+                ),
+                None
+            )
+
+            if selected_vehicle is None:
+                messages.error(
+                    request,
+                    "Please select one of your saved vehicles."
+                )
+                return render(request, "booking.html", context)
+
+            vehicle_year = str(selected_vehicle.year)
+            vehicle_make = selected_vehicle.make
+            vehicle_model = selected_vehicle.model
+            vehicle_type = selected_vehicle.vehicle_type
+
+        else:
+            vehicle_year = request.POST.get(
+                "vehicle_year", ""
+            ).strip()
+
+            vehicle_make = request.POST.get(
+                "vehicle_make", ""
+            ).strip()
+
+            vehicle_model = request.POST.get(
+                "vehicle_model", ""
+            ).strip()
+
+            vehicle_type = request.POST.get(
+                "vehicle_type", ""
+            ).strip()
+
 
 
 

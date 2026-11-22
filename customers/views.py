@@ -4,6 +4,9 @@ from django.contrib import messages
 from django.contrib.auth import get_user_model
 from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ValidationError
+from django.contrib.auth.decorators import login_required
+from .models import Vehicle
+from datetime import date
 
 User = get_user_model()
 
@@ -78,3 +81,94 @@ def signup(request):
         return redirect("login")
 
     return render(request, "signup.html")
+
+
+@login_required(login_url="/login/")
+def my_vehicles(request):
+
+    # Retrieve only this customer's vehicles
+    vehicles = Vehicle.objects.filter(
+        customer=request.user
+    ).order_by("-year", "make", "model")
+
+    vehicle_years = range(
+        date.today().year, 1995, -1
+    )
+
+    allowed_vehicle_types = {
+        "sedan",
+        "suv",
+        "truck",
+        "coupe",
+        "hatchback",
+        "van",
+        "wagon",
+        "other",
+    }
+
+    if request.method == "POST":
+
+        year = request.POST.get(
+            "vehicle_year", ""
+        ).strip()
+
+        make = request.POST.get(
+            "vehicle_make", ""
+        ).strip()
+
+        model = request.POST.get(
+            "vehicle_model", ""
+        ).strip()
+
+        vehicle_type = request.POST.get(
+            "vehicle_type", ""
+        ).strip()
+
+        license_plate = request.POST.get(
+            "license_plate", ""
+        ).strip().upper()
+
+        # Validate submitted information
+        if (
+            not year.isdigit()
+            or not 1996 <= int(year) <= date.today().year
+            or not make
+            or not model
+            or len(make) > 50
+            or len(model) > 50
+            or vehicle_type not in allowed_vehicle_types
+            or len(license_plate) > 20
+        ):
+            messages.error(
+                request,
+                "Please enter valid vehicle information."
+            )
+
+            return redirect("my_vehicles")
+
+        # Save the vehicle to MongoDB
+        Vehicle.objects.create(
+            customer=request.user,
+            year=int(year),
+            make=make,
+            model=model,
+            vehicle_type=vehicle_type,
+            license_plate=license_plate,
+        )
+
+        messages.success(
+            request,
+            "Your vehicle has been saved successfully!"
+        )
+
+        return redirect("my_vehicles")
+
+    return render(
+        request,
+        "my_vehicles.html",
+        {
+            "vehicles": vehicles,
+            "vehicle_years": vehicle_years,
+        }
+    )
+

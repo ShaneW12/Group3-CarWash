@@ -22,89 +22,125 @@
             <form method="POST" action="{% url 'booking' %}">
                 {% csrf_token %}
 
+                
+                
                 <!-- Vehicle Selection -->
                 <div class="form-section">
-
+                
                     <h2>1. Select Your Vehicle</h2>
-
-                    <p class="form-description">
-                        Enter your vehicle information to get started.
-                    </p>
-
-                    <!-- Year -->
-                    <label for="vehicle-year">
-                        Vehicle Year
-                    </label>
-
-                    <select
-                        id="vehicle-year"
-                        name="vehicle_year"
-                        required
-                    >
-                        <option value="">Select year</option>
-                        {% for year in vehicle_years %}
-                            <option value="{{ year }}">
-                                {{ year }}
-                            </option>
-                        {% endfor %}
-                    </select>
-
-                    <!-- Make -->
-                    <label for="vehicle-make">
-                        Vehicle Make
-                    </label>
-
-                    <select
-                        id="vehicle-make"
-                        name="vehicle_make"
-                        data-url="{% url 'vehicle_makes' %}"
-                        required
-                        disabled
-                    >
-                        <option value="">Select manufacturer</option>
-                    </select>
-
-                    <!-- Model -->
-                    <label for="vehicle-model">
-                        Vehicle Model
-                    </label>
-
-                    <select
-                        id="vehicle-model"
-                        name="vehicle_model"
-                        data-url="{% url 'vehicle_models' %}"
-                        required
-                        disabled
-                    >
-                        <option value="">Select model</option>
-                    </select>
-
-                    <!-- Vehicle Type -->
-                    <label for="vehicle-type">
-                        Vehicle Type
-                    </label>
-
-                    <select
-                        id="vehicle-type"
-                        name="vehicle_type"
-                        required
-                    >
-                        <option value="">Select vehicle type</option>
-                        <option value="sedan">Sedan</option>
-                        <option value="suv">SUV</option>
-                        <option value="truck">Truck</option>
-                        <option value="coupe">Coupe</option>
-                        <option value="hatchback">Hatchback</option>
-                        <option value="van">Van</option>
-                        <option value="wagon">Wagon</option>
-                        <option value="other">Other</option>
-                    </select>
-
-                    <p class="availability-note">
-                        Can't find your vehicle? Contact us for assistance.
-                    </p>
-
+                
+                    {% if user.is_authenticated %}
+                
+                        <p class="form-description">
+                            Choose one of your saved vehicles.
+                        </p>
+                    
+                        {% if customer_vehicles %}
+                    
+                            <label for="saved-vehicle">
+                                My Vehicles
+                            </label>
+                        
+                            <select
+                                id="saved-vehicle"
+                                name="saved_vehicle"
+                                required
+                            >
+                                <option value="">
+                                    Select a saved vehicle
+                                </option>
+                            
+                                {% for vehicle in customer_vehicles %}
+                            
+                                    <option value="{{ vehicle.id }}">
+                                        {{ vehicle.year }}
+                                        {{ vehicle.make }}
+                                        {{ vehicle.model }}
+                                        ({{ vehicle.vehicle_type|title }})
+                                    </option>
+                                
+                                {% endfor %}
+                                
+                            </select>
+                        
+                        {% else %}
+                        
+                            <p class="availability-note">
+                                You haven't saved any vehicles yet.
+                            </p>
+                        
+                            <a href="{% url 'my_vehicles' %}">
+                                Add Your First Vehicle
+                            </a>
+                        
+                        {% endif %}
+                        
+                    {% else %}
+                        
+                        <!-- Guest vehicle selection -->
+                        
+                        <p class="form-description">
+                            Enter your vehicle information to get started.
+                        </p>
+                    
+                        <label for="vehicle-year">Vehicle Year</label>
+                        <select
+                            id="vehicle-year"
+                            name="vehicle_year"
+                            required
+                        >
+                            <option value="">Select year</option>
+                    
+                            {% for year in vehicle_years %}
+                                <option value="{{ year }}">
+                                    {{ year }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    
+                        <label for="vehicle-make">Vehicle Make</label>
+                        <select
+                            id="vehicle-make"
+                            name="vehicle_make"
+                            data-url="{% url 'vehicle_makes' %}"
+                            required
+                            disabled
+                        >
+                            <option value="">Select manufacturer</option>
+                        </select>
+                    
+                        <label for="vehicle-model">Vehicle Model</label>
+                        <select
+                            id="vehicle-model"
+                            name="vehicle_model"
+                            data-url="{% url 'vehicle_models' %}"
+                            required
+                            disabled
+                        >
+                            <option value="">Select model</option>
+                        </select>
+                    
+                        <label for="vehicle-type">Vehicle Type</label>
+                        <select
+                            id="vehicle-type"
+                            name="vehicle_type"
+                            required
+                        >
+                            <option value="">Select vehicle type</option>
+                            <option value="sedan">Sedan</option>
+                            <option value="suv">SUV</option>
+                            <option value="truck">Truck</option>
+                            <option value="coupe">Coupe</option>
+                            <option value="hatchback">Hatchback</option>
+                            <option value="van">Van</option>
+                            <option value="wagon">Wagon</option>
+                            <option value="other">Other</option>
+                        </select>
+                    
+                    {% endif %}
+                    
                 </div>
+
 
                 
 
