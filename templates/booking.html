@@ -291,13 +291,68 @@
             </option>
         </select>
 
-                    <p class="availability-note">
-                        Available times will eventually be calculated
-                        automatically based on existing appointments.
+                    <p
+                        id="availability-message"
+                        class="availability-note"
+                        aria-live="polite"
+                    >
+                        Choose your services and date to see available times.
                     </p>
 
                 </div>
 
+                                <!-- AI Appointment Recommendation -->
+                <div
+                    class="form-section"
+                    id="ai-recommendation-section"
+                    data-url="{% url 'ai_booking_recommendation' %}"
+                >
+                    <h2>✨ CleanRide AI Assistant</h2>
+
+                    <p class="form-description">
+                        Need help choosing an appointment time?
+                        Let our AI assistant recommend an available
+                        time based on your selected services.
+                    </p>
+                
+                    <button
+                        type="button"
+                        id="ai-recommend-button"
+                        class="booking-button"
+                    >
+                        ✨ Get AI Recommendation
+                    </button>
+                
+                    <div
+                        id="ai-recommendation-result"
+                        hidden
+                        aria-live="polite"
+                    >
+                        <h3>Recommended Appointment</h3>
+                
+                        <p>
+                            <strong>Suggested Time:</strong>
+                            <span id="ai-recommended-time"></span>
+                        </p>
+                    
+                        <p id="ai-recommendation-reason"></p>
+                    
+                        <button
+                            type="button"
+                            id="ai-use-time-button"
+                            class="booking-button"
+                        >
+                            Use This Time
+                        </button>
+                    </div>
+                
+                    <p
+                        id="ai-recommendation-error"
+                        class="availability-note"
+                        role="status"
+                        hidden
+                    ></p>
+                </div>
                 
                 
                 <!-- Appointment Summary -->

@@ -20,6 +20,10 @@ from .nhtsa import get_vehicle_makes, get_vehicle_models
 
 from .models import Appointment
 from services.models import Service
+from .ai_scheduler import (
+    recommend_appointment,
+    AIRecommendationError
+)
 
 vehicle_years = range(date.today().year, 1995, -1)
 
@@ -507,4 +511,84 @@ def available_booking_slots(request):
         "duration_minutes": total_duration,
         "available_slots": available_slots,
     })
+@require_GET
+def ai_booking_recommendation(request):
+    """
+    Ask Gemini to recommend an appointment time
+    from slots validated by our Python scheduler.
+    """
+
+    selected_date = parse_date(
+        request.GET.get("date", "")
+    )
+
+    service_codes = request.GET.getlist("service")
+
+    if not selected_date or selected_date < date.today():
+        return JsonResponse(
+            {"error": "Please select a valid future date."},
+            status=400
+        )
+
+    if not service_codes:
+        return JsonResponse(
+            {"error": "Please select at least one service."},
+            status=400
+        )
+
+    if len(service_codes) != len(set(service_codes)):
+        return JsonResponse(
+            {"error": "Duplicate services are not allowed."},
+            status=400
+        )
+
+    selected_service_objects = list(
+        Service.objects.filter(code__in=service_codes)
+    )
+
+    if len(selected_service_objects) != len(service_codes):
+        return JsonResponse(
+            {"error": "Invalid service selection."},
+            status=400
+        )
+
+    total_duration = sum(
+        service.duration_minutes
+        for service in selected_service_objects
+    )
+
+    available_slots = get_available_slots(
+        selected_date,
+        total_duration
+    )
+
+    if not available_slots:
+        return JsonResponse({
+            "recommended_time": None,
+            "reason": "No appointment times are available for this date."
+        })
+
+    try:
+        recommendation = recommend_appointment(
+            appointment_date=selected_date,
+            selected_services=[
+                service.code
+                for service in selected_service_objects
+            ],
+            duration_minutes=total_duration,
+            available_slots=available_slots
+        )
+
+        return JsonResponse(recommendation)
+
+    except AIRecommendationError:
+        return JsonResponse(
+            {
+                "error": (
+                    "AI recommendations are temporarily unavailable. "
+                    "You can still choose an available appointment time."
+                )
+            },
+            status=503
+        )
 
