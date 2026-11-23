@@ -8,12 +8,13 @@ from pathlib import Path
 from django.conf import settings
 from google import genai
 from google.genai import types
+from google.genai.errors import ServerError, ClientError
 
 
 # Change this through your environment if needed.
 GEMINI_MODEL = os.getenv(
     "GEMINI_MODEL",
-    "gemini-2.5-flash"
+    "gemini-3.5-flash-lite"
 )
 
 PROMPT_FILE = (
@@ -31,7 +32,9 @@ def load_scheduling_prompt():
     """
     Read the versioned LLM prompt from disk.
     """
-    return PROMPT_FILE.read_text(encoding="utf-8")
+    return PROMPT_FILE.read_text(
+        encoding="utf-8"
+    )
 
 
 def recommend_appointment(
@@ -47,10 +50,10 @@ def recommend_appointment(
     This function does NOT create appointments.
 
     Returns:
-    {
-        "recommended_time": "HH:MM",
-        "reason": "Explanation..."
-    }
+        {
+            "recommended_time": "HH:MM",
+            "reason": "Explanation..."
+        }
 
     Returns None if there are no available slots.
     """
@@ -182,7 +185,23 @@ def recommend_appointment(
     except AIRecommendationError:
         raise
 
+    except ServerError as exc:
+            if exc.code == 503:
+                raise AIRecommendationError(
+                    "Gemini is temporarily unavailable due to high demand."
+                ) from exc
+    
+            raise AIRecommendationError(
+                f"Gemini server error ({exc.code})."
+            ) from exc
+    
+    except ClientError as exc:
+            raise AIRecommendationError(
+                f"Gemini rejected the request ({exc.code}). "
+                "Check the configured model and API access."
+            ) from exc
+    
     except Exception as exc:
-        raise AIRecommendationError(
-            "Unable to generate an AI recommendation."
-        ) from exc
+            raise AIRecommendationError(
+                "Unable to generate an AI recommendation."
+            ) from exc

@@ -1,4 +1,18 @@
 
+/*
+ * CleanRide Booking JavaScript
+ *
+ * Features:
+ * 1. NHTSA Vehicle Selection
+ * 2. Dynamic Service Pricing and Duration
+ * 3. Smart Appointment Availability
+ * 4. Gemini AI Appointment Recommendations
+ */
+
+
+/* ==========================================
+   1. NHTSA VEHICLE SELECTION
+========================================== */
 
 document.addEventListener("DOMContentLoaded", function () {
 
@@ -6,8 +20,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const makeSelect = document.getElementById("vehicle-make");
     const modelSelect = document.getElementById("vehicle-model");
 
-    // Only initialize NHTSA dropdowns if they exist.
-    // Logged-in users use saved vehicles instead.
+    // Logged-in users select saved vehicles instead.
     if (!yearSelect || !makeSelect || !modelSelect) {
         return;
     }
@@ -18,14 +31,14 @@ document.addEventListener("DOMContentLoaded", function () {
     let makesRequest = 0;
     let modelsRequest = 0;
 
-    // Reset a dropdown
     function resetDropdown(dropdown, placeholder) {
-        dropdown.innerHTML = "";
-        dropdown.add(new Option(placeholder, ""));
+        dropdown.replaceChildren(
+            new Option(placeholder, "")
+        );
         dropdown.disabled = true;
     }
 
-    // Load manufacturers when a year is selected
+    // Load manufacturers when year changes
     yearSelect.addEventListener("change", async function () {
 
         const requestId = ++makesRequest;
@@ -82,7 +95,7 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     });
 
-    // Load models when a manufacturer is selected
+    // Load models when manufacturer changes
     makeSelect.addEventListener("change", async function () {
 
         const requestId = ++modelsRequest;
@@ -150,7 +163,7 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     });
 
-    // Validate guest vehicle selection before submission
+    // Validate guest vehicle selection
     yearSelect.closest("form").addEventListener(
         "submit",
         function (event) {
@@ -172,10 +185,9 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 
-/*
- *  Dynamic Service Pricing
- * Updates the booking summary when services change.
- */
+/* ==========================================
+   2. DYNAMIC SERVICE PRICING AND DURATION
+========================================== */
 
 document.addEventListener("DOMContentLoaded", function () {
 
@@ -194,6 +206,14 @@ document.addEventListener("DOMContentLoaded", function () {
     const summaryPrice = document.getElementById(
         "summary-price"
     );
+
+    if (
+        !summaryServices ||
+        !summaryDuration ||
+        !summaryPrice
+    ) {
+        return;
+    }
 
     function updateAppointmentSummary() {
 
@@ -225,39 +245,34 @@ document.addEventListener("DOMContentLoaded", function () {
             }
         });
 
-        // Update selected service names
         summaryServices.textContent =
             selectedServiceNames.length > 0
                 ? selectedServiceNames.join(", ")
                 : "No services selected";
 
-        // Update total duration
         summaryDuration.textContent =
             totalDurationMinutes + " minutes";
 
-        // Convert cents into dollars
         summaryPrice.textContent =
             "$" + (totalPriceCents / 100).toFixed(2);
     }
 
-    // Listen for service checkbox changes
     serviceCheckboxes.forEach(function (checkbox) {
-
         checkbox.addEventListener(
             "change",
             updateAppointmentSummary
         );
     });
 
-    // Initialize the summary when the page loads
     updateAppointmentSummary();
 
 });
 
 
-/*
- * CleanRide Smart Appointment Availability
- */
+/* ==========================================
+   3. APPOINTMENT AVAILABILITY
+   4. GEMINI AI RECOMMENDATIONS
+========================================== */
 
 document.addEventListener("DOMContentLoaded", function () {
 
@@ -272,11 +287,73 @@ document.addEventListener("DOMContentLoaded", function () {
         "availability-message"
     );
 
+    // AI elements
+    const aiSection = document.getElementById(
+        "ai-recommendation-section"
+    );
+
+    const aiButton = document.getElementById(
+        "ai-recommend-button"
+    );
+
+    const aiResult = document.getElementById(
+        "ai-recommendation-result"
+    );
+
+    const aiError = document.getElementById(
+        "ai-recommendation-error"
+    );
+
+    const recommendedTime = document.getElementById(
+        "ai-recommended-time"
+    );
+
+    const recommendationReason = document.getElementById(
+        "ai-recommendation-reason"
+    );
+
+    const useTimeButton = document.getElementById(
+        "ai-use-time-button"
+    );
+
     if (!dateInput || !timeSelect) {
         return;
     }
 
-    let requestVersion = 0;
+    let availabilityRequestVersion = 0;
+    let aiRequestVersion = 0;
+
+    let aiController = null;
+    let currentRecommendation = null;
+
+    // Keep AI optional if its HTML is not present.
+    const aiEnabled = Boolean(
+        aiSection &&
+        aiButton &&
+        aiResult &&
+        aiError &&
+        recommendedTime &&
+        recommendationReason &&
+        useTimeButton &&
+        aiSection.dataset.url
+    );
+
+
+    /* --------------------------------------
+       Helper functions
+    -------------------------------------- */
+
+    function getSelectedServices() {
+        return Array.from(serviceCheckboxes)
+            .filter(checkbox => checkbox.checked)
+            .map(checkbox => checkbox.value);
+    }
+
+    function setAvailabilityMessage(message) {
+        if (availabilityMessage) {
+            availabilityMessage.textContent = message;
+        }
+    }
 
     function resetTimes(message) {
         timeSelect.replaceChildren(
@@ -286,32 +363,108 @@ document.addEventListener("DOMContentLoaded", function () {
         timeSelect.disabled = true;
     }
 
+    function formatTime(time) {
+
+        const [hour, minute] = time.split(":")
+            .map(Number);
+
+        return new Date(
+            2000, 0, 1, hour, minute
+        ).toLocaleTimeString("en-US", {
+            hour: "numeric",
+            minute: "2-digit"
+        });
+    }
+
+    function isTimeInDropdown(time) {
+        return !timeSelect.disabled &&
+            Array.from(timeSelect.options).some(
+                option => option.value === time
+            );
+    }
+
+    function setAIButtonReady() {
+        if (!aiEnabled) {
+            return;
+        }
+
+        aiButton.disabled =
+            timeSelect.disabled ||
+            !dateInput.value ||
+            getSelectedServices().length === 0;
+    }
+
+    function resetAIRecommendation() {
+
+        // Invalidate any outstanding AI response.
+        aiRequestVersion++;
+
+        if (aiController) {
+            aiController.abort();
+            aiController = null;
+        }
+
+        currentRecommendation = null;
+
+        if (!aiEnabled) {
+            return;
+        }
+
+        aiResult.hidden = true;
+        aiError.hidden = true;
+
+        recommendedTime.textContent = "";
+        recommendationReason.textContent = "";
+
+        aiButton.textContent = "✨ Get AI Recommendation";
+
+        setAIButtonReady();
+    }
+
+    function showAIError(message) {
+        if (!aiEnabled) {
+            return;
+        }
+
+        aiResult.hidden = true;
+        aiError.textContent = message;
+        aiError.hidden = false;
+    }
+
+
+    /* --------------------------------------
+       Retrieve available appointment times
+    -------------------------------------- */
+
     async function updateAvailableTimes() {
 
-        // Invalidate older responses
-        const version = ++requestVersion;
+        const version = ++availabilityRequestVersion;
 
-        const selectedServices = Array.from(
-            serviceCheckboxes
-        )
-        .filter(checkbox => checkbox.checked)
-        .map(checkbox => checkbox.value);
+        // Clear recommendations whenever inputs change.
+        resetAIRecommendation();
 
+        const selectedServices = getSelectedServices();
         const selectedDate = dateInput.value;
 
         if (!selectedDate || selectedServices.length === 0) {
+
             resetTimes("Select services and a date first");
 
-            availabilityMessage.textContent =
-                "Choose your services and date to see available times.";
+            setAvailabilityMessage(
+                "Choose your services and date to see available times."
+            );
 
+            setAIButtonReady();
             return;
         }
 
         resetTimes("Checking availability...");
 
-        availabilityMessage.textContent =
-            "Finding available appointments...";
+        setAvailabilityMessage(
+            "Finding available appointments..."
+        );
+
+        setAIButtonReady();
 
         const params = new URLSearchParams();
 
@@ -328,8 +481,8 @@ document.addEventListener("DOMContentLoaded", function () {
 
             const data = await response.json();
 
-            // Ignore responses for outdated selections
-            if (version !== requestVersion) {
+            // Ignore outdated responses.
+            if (version !== availabilityRequestVersion) {
                 return;
             }
 
@@ -341,43 +494,40 @@ document.addEventListener("DOMContentLoaded", function () {
 
             resetTimes("Select an available time");
 
-            if (data.available_slots.length === 0) {
-
+            if (
+                !Array.isArray(data.available_slots) ||
+                data.available_slots.length === 0
+            ) {
                 resetTimes("No available appointments");
 
-                availabilityMessage.textContent =
+                setAvailabilityMessage(
                     "No appointments are available for this date. " +
-                    "Please choose another date.";
+                    "Please choose another date."
+                );
 
+                setAIButtonReady();
                 return;
             }
 
             data.available_slots.forEach(slot => {
 
-                const [hour, minute] = slot.split(":")
-                    .map(Number);
-
-                const formattedTime = new Date(
-                    2000, 0, 1, hour, minute
-                ).toLocaleTimeString("en-US", {
-                    hour: "numeric",
-                    minute: "2-digit"
-                });
-
                 timeSelect.add(
-                    new Option(formattedTime, slot)
+                    new Option(formatTime(slot), slot)
                 );
             });
 
             timeSelect.disabled = false;
 
-            availabilityMessage.textContent =
+            setAvailabilityMessage(
                 `${data.available_slots.length} available ` +
-                `starting times found.`;
+                "starting times found."
+            );
+
+            setAIButtonReady();
 
         } catch (error) {
 
-            if (version !== requestVersion) {
+            if (version !== availabilityRequestVersion) {
                 return;
             }
 
@@ -385,18 +535,194 @@ document.addEventListener("DOMContentLoaded", function () {
 
             resetTimes("Unable to load appointments");
 
-            availabilityMessage.textContent =
-                "Unable to check availability. Please try again.";
+            setAvailabilityMessage(
+                "Unable to check availability. Please try again."
+            );
+
+            setAIButtonReady();
         }
     }
 
-    // Refresh availability when the date changes
+
+    /* --------------------------------------
+       Request a Gemini AI recommendation
+    -------------------------------------- */
+
+    async function getAIRecommendation() {
+
+        if (!aiEnabled) {
+            return;
+        }
+
+        const selectedDate = dateInput.value;
+        const selectedServices = getSelectedServices();
+
+        resetAIRecommendation();
+
+        if (
+            !selectedDate ||
+            selectedServices.length === 0
+        ) {
+            showAIError(
+                "Please select a date and at least one service."
+            );
+            return;
+        }
+
+        if (timeSelect.disabled) {
+            showAIError(
+                "Please wait for available appointment times to load."
+            );
+            return;
+        }
+
+        const params = new URLSearchParams();
+
+        params.append("date", selectedDate);
+
+        selectedServices.forEach(code => {
+            params.append("service", code);
+        });
+
+        const version = ++aiRequestVersion;
+        const controller = new AbortController();
+
+        aiController = controller;
+
+        aiButton.disabled = true;
+        aiButton.textContent = "Getting recommendation...";
+
+        try {
+            const response = await fetch(
+                `${aiSection.dataset.url}?${params.toString()}`,
+                {
+                    method: "GET",
+                    signal: controller.signal
+                }
+            );
+
+            const data = await response.json();
+
+            // Ignore requests for outdated selections.
+            if (version !== aiRequestVersion) {
+                return;
+            }
+
+            if (!response.ok) {
+                throw new Error(
+                    data.error ||
+                    "Unable to get an AI recommendation."
+                );
+            }
+
+            if (!data.recommended_time) {
+                showAIError(
+                    data.reason ||
+                    "No appointment times are available."
+                );
+                return;
+            }
+
+            // Never accept a time missing from the
+            // current Python-generated dropdown.
+            if (!isTimeInDropdown(data.recommended_time)) {
+                throw new Error(
+                    "The recommended time is no longer " +
+                    "available. Please refresh your times."
+                );
+            }
+
+            currentRecommendation = data.recommended_time;
+
+            recommendedTime.textContent = formatTime(
+                data.recommended_time
+            );
+
+            recommendationReason.textContent =
+                data.reason || "Recommended available time.";
+
+            aiError.hidden = true;
+            aiResult.hidden = false;
+
+        } catch (error) {
+
+            if (version !== aiRequestVersion) {
+                return;
+            }
+
+            if (error.name !== "AbortError") {
+                console.error("Gemini AI error:", error);
+
+                showAIError(
+                    error.message ||
+                    "AI recommendations are temporarily unavailable."
+                );
+            }
+
+        } finally {
+
+            if (version === aiRequestVersion) {
+
+                aiController = null;
+
+                aiButton.textContent =
+                    "✨ Get AI Recommendation";
+
+                setAIButtonReady();
+            }
+        }
+    }
+
+
+    /* --------------------------------------
+       Use the recommended appointment time
+    -------------------------------------- */
+
+    function useRecommendedTime() {
+
+        if (!currentRecommendation) {
+            return;
+        }
+
+        if (!isTimeInDropdown(currentRecommendation)) {
+
+            resetAIRecommendation();
+
+            showAIError(
+                "This appointment time is no longer available."
+            );
+
+            return;
+        }
+
+        // Select the actual option in the booking form.
+        timeSelect.value = currentRecommendation;
+
+        // Notify other JavaScript listeners.
+        timeSelect.dispatchEvent(
+            new Event("change", {
+                bubbles: true
+            })
+        );
+
+        // Highlight selection briefly through focus.
+        timeSelect.focus();
+
+        // The customer must still submit the booking form.
+    }
+
+
+    /* --------------------------------------
+       Event listeners
+    -------------------------------------- */
+
+    // Date changes trigger Python availability checks.
     dateInput.addEventListener(
         "change",
         updateAvailableTimes
     );
 
-    // Refresh availability when services change
+    // Service changes update availability.
     serviceCheckboxes.forEach(checkbox => {
         checkbox.addEventListener(
             "change",
@@ -404,9 +730,26 @@ document.addEventListener("DOMContentLoaded", function () {
         );
     });
 
-    // Check availability on page load
+    // AI recommendation button
+    if (aiEnabled) {
+
+        aiButton.addEventListener(
+            "click",
+            getAIRecommendation
+        );
+
+        useTimeButton.addEventListener(
+            "click",
+            useRecommendedTime
+        );
+
+        aiResult.hidden = true;
+        aiError.hidden = true;
+
+        aiButton.disabled = true;
+    }
+
+    // Initialize availability on page load.
     updateAvailableTimes();
 
 });
-
-

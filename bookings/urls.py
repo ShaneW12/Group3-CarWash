@@ -44,4 +44,9 @@ path(
     views.available_booking_slots,
     name="available_booking_slots"
 ),
+path(
+    "api/ai-recommendation/",
+    views.ai_booking_recommendation,
+    name="ai_booking_recommendation"
+),
 ]
