@@ -2,6 +2,9 @@ from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.contrib.auth import get_user_model
 
+#Added import for PasswordResetView
+from django.contrib.auth.views import PasswordResetView 
+
 User = get_user_model()
 
 
@@ -34,4 +37,16 @@ def signup(request):
 
     return render(request, "signup.html")
 
+class PasswordResetRequestView(PasswordResetView):
+    template_name = "forgot_password.html"
+    email_template_name = "password_reset_email.html"
+    subject_template_name = "password_reset_subject.txt"
+    success_url = "/password_reset_done/"
+
+
+
 # Create your views here.
+
+
+
+
