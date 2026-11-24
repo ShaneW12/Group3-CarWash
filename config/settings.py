@@ -52,6 +52,7 @@ MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
+    'config.middleware.RemoveChatTrackingMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
@@ -63,7 +64,7 @@ ROOT_URLCONF = 'config.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [BASE_DIR / 'templates'],
+       'DIRS': [BASE_DIR / 'templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -88,6 +89,12 @@ DATABASES = {
         "NAME": "cleanride",
         "OPTIONS": {
             "tlsCAFile": certifi.where(),
+        },
+        "TEST": {
+            "NAME": os.getenv(
+        "MONGODB_TEST_DB_NAME",
+        "cleanride_ci_test"
+    ),
         },
     }
 }
@@ -132,6 +139,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/6.1/howto/static-files/
 
 STATIC_URL = 'static/'
+STATICFILES_DIRS = [BASE_DIR / 'static']
 
 STATICFILES_DIRS = [
     BASE_DIR / 'static',

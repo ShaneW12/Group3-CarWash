@@ -1,0 +1,211 @@
+
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+
+<main class="booking-page">
+
+    <section class="booking-header">
+        <h1>My Vehicles</h1>
+
+        <p>
+            Manage your saved vehicles for faster booking.
+        </p>
+    </section>
+
+    <section class="booking-container">
+
+        <!-- Saved Vehicles -->
+        <div class="form-section">
+
+            <h2>Your Saved Vehicles</h2>
+
+            {% for vehicle in vehicles %}
+
+              
+        <div class="vehicle-card">
+        
+            <h3>
+                {{ vehicle.year }}
+                {{ vehicle.make }}
+                {{ vehicle.model }}
+            </h3>
+        
+            <p>
+                <strong>Vehicle Type:</strong>
+                {{ vehicle.vehicle_type|title }}
+            </p>
+        
+            {% if vehicle.license_plate %}
+                <p>
+                    <strong>License Plate:</strong>
+                    {{ vehicle.license_plate }}
+                </p>
+            {% endif %}
+            
+            <!-- Vehicle Management Buttons -->
+            <div class="vehicle-actions">
+            
+                <!-- Edit -->
+                <a
+                    href="{% url 'edit_vehicle' vehicle.id %}"
+                    class="vehicle-edit-button"
+                >
+                    Edit Vehicle
+                </a>
+            
+                <!-- Delete -->
+                <form
+                    method="POST"
+                    action="{% url 'delete_vehicle' vehicle.id %}"
+                    onsubmit="return confirm('Are you sure you want to delete this vehicle?');"
+                >
+                    {% csrf_token %}
+            
+                    <button
+                        type="submit"
+                        class="vehicle-delete-button"
+                    >
+                        Delete Vehicle
+                    </button>
+                
+                </form>
+            
+            </div>
+        
+        </div>
+
+
+            {% empty %}
+
+                <p>
+                    You haven't added any vehicles yet.
+                </p>
+
+            {% endfor %}
+
+        </div>
+
+        <!-- Add Vehicle Form -->
+        <div class="form-section">
+
+            <h2>Add a New Vehicle</h2>
+
+            <p class="form-description">
+                Save your vehicle so you can select it
+                when booking an appointment.
+            </p>
+
+            <form method="POST"
+                  action="{% url 'my_vehicles' %}">
+
+                {% csrf_token %}
+
+                <!-- Vehicle Year -->
+                <label for="vehicle-year">
+                    Vehicle Year
+                </label>
+
+                <select
+                    id="vehicle-year"
+                    name="vehicle_year"
+                    required
+                >
+                    <option value="">Select year</option>
+
+                    {% for year in vehicle_years %}
+                        <option value="{{ year }}">
+                            {{ year }}
+                        </option>
+                    {% endfor %}
+
+                </select>
+
+                <!-- Vehicle Make -->
+                <label for="vehicle-make">
+                    Vehicle Make
+                </label>
+
+                <select
+                    id="vehicle-make"
+                    name="vehicle_make"
+                    data-url="{% url 'vehicle_makes' %}"
+                    required
+                    disabled
+                >
+                    <option value="">
+                        Select manufacturer
+                    </option>
+                </select>
+
+                <!-- Vehicle Model -->
+                <label for="vehicle-model">
+                    Vehicle Model
+                </label>
+
+                <select
+                    id="vehicle-model"
+                    name="vehicle_model"
+                    data-url="{% url 'vehicle_models' %}"
+                    required
+                    disabled
+                >
+                    <option value="">Select model</option>
+                </select>
+
+                <!-- Vehicle Type -->
+                <label for="vehicle-type">
+                    Vehicle Type
+                </label>
+
+                <select
+                    id="vehicle-type"
+                    name="vehicle_type"
+                    required
+                >
+                    <option value="">Select vehicle type</option>
+                    <option value="sedan">Sedan</option>
+                    <option value="suv">SUV</option>
+                    <option value="truck">Truck</option>
+                    <option value="coupe">Coupe</option>
+                    <option value="hatchback">Hatchback</option>
+                    <option value="van">Van</option>
+                    <option value="wagon">Wagon</option>
+                    <option value="other">Other</option>
+                </select>
+
+                <!-- License Plate -->
+                <label for="license-plate">
+                    License Plate (Optional)
+                </label>
+
+                <input
+                    type="text"
+                    id="license-plate"
+                    name="license_plate"
+                    maxlength="20"
+                    placeholder="Enter license plate"
+                >
+
+                <button
+                    type="submit"
+                    class="booking-button"
+                >
+                    Save Vehicle
+                </button>
+
+            </form>
+
+        </div>
+
+    </section>
+
+</main>
+
+<script
+    src="{% static 'js/my_vehicles.js' %}"
+    defer>
+</script>
+
+{% endblock %}

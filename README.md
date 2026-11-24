@@ -29,3 +29,25 @@ The CleanRide application prototype was designed using Figma. It demonstrates th
 
 Figma Prototype: https://www.figma.com/proto/Vn8Vwwh0KszgRAUkMGoyGF/Untitled?node-id=6-688&viewport=98%2C308%2C0.1&t=2LIiqzRDqfFvVQEo-1&scaling=min-zoom&content-scaling=fixed&page-id=0%3A1
 
+-------------------------------------------
+Completed Features
+
+Customer Registration: Customers can create an account by providing their personal information and login credentials.
+
+Customer Login: Registered customers can securely log in using their email and password to access their accounts.
+
+CI/CD Pipeline
+
+The project uses a GitHub Actions workflow located at .github/workflows/csc325_ci_cd.yml.
+
+The workflow automates the development pipeline whenever code is pushed to the main branch. It includes four stages:
+
+Setup: Prepares the GitHub Actions environment and checks out the project code.
+
+Dependencies: Installs the required Python packages and project dependencies.
+
+Testing: Runs the project's automated tests to verify that the application is functioning correctly.
+
+Deploy: Executes the deployment stage after the preceding pipeline stages complete successfully.
+
+This workflow helps maintain code quality by automatically testing changes and identifying issues before deployment.

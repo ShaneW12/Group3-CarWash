@@ -1,7 +1,8 @@
-{% extends 'base.html' %} 
+
+{% extends 'base.html' %}
+{% load static %}
 
 {% block content %}
-
 
     <!-- Booking Page -->
     <main class="booking-page">
@@ -16,279 +17,371 @@
 
         </section>
 
-
         <section class="booking-container">
 
-            <form>
+            <form method="POST" action="{% url 'booking' %}">
+                {% csrf_token %}
 
-
-                <!-- Vehicle -->
+                
+                
+                <!-- Vehicle Selection -->
                 <div class="form-section">
-
+                
                     <h2>1. Select Your Vehicle</h2>
-
-                    <label for="vehicle">
-                        Vehicle
-                    </label>
-
-                    <select id="vehicle" name="vehicle">
-
-                        <option value="">
-                            Select a vehicle
-                        </option>
-
-                        <option value="civic">
-                            2020 Honda Civic
-                        </option>
-
-                        <option value="rav4">
-                            2024 Toyota RAV4
-                        </option>
-
-                    </select>
-
+                
+                    {% if user.is_authenticated %}
+                
+                        <p class="form-description">
+                            Choose one of your saved vehicles.
+                        </p>
+                    
+                        {% if customer_vehicles %}
+                    
+                            <label for="saved-vehicle">
+                                My Vehicles
+                            </label>
+                        
+                            <select
+                                id="saved-vehicle"
+                                name="saved_vehicle"
+                                required
+                            >
+                                <option value="">
+                                    Select a saved vehicle
+                                </option>
+                            
+                                {% for vehicle in customer_vehicles %}
+                            
+                                    <option value="{{ vehicle.id }}">
+                                        {{ vehicle.year }}
+                                        {{ vehicle.make }}
+                                        {{ vehicle.model }}
+                                        ({{ vehicle.vehicle_type|title }})
+                                    </option>
+                                
+                                {% endfor %}
+                                
+                            </select>
+                        
+                        {% else %}
+                        
+                            <p class="availability-note">
+                                You haven't saved any vehicles yet.
+                            </p>
+                        
+                            <a href="{% url 'my_vehicles' %}">
+                                Add Your First Vehicle
+                            </a>
+                        
+                        {% endif %}
+                        
+                    {% else %}
+                        
+                        <!-- Guest vehicle selection -->
+                        
+                        <p class="form-description">
+                            Enter your vehicle information to get started.
+                        </p>
+                    
+                        <label for="vehicle-year">Vehicle Year</label>
+                        <select
+                            id="vehicle-year"
+                            name="vehicle_year"
+                            required
+                        >
+                            <option value="">Select year</option>
+                    
+                            {% for year in vehicle_years %}
+                                <option value="{{ year }}">
+                                    {{ year }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    
+                        <label for="vehicle-make">Vehicle Make</label>
+                        <select
+                            id="vehicle-make"
+                            name="vehicle_make"
+                            data-url="{% url 'vehicle_makes' %}"
+                            required
+                            disabled
+                        >
+                            <option value="">Select manufacturer</option>
+                        </select>
+                    
+                        <label for="vehicle-model">Vehicle Model</label>
+                        <select
+                            id="vehicle-model"
+                            name="vehicle_model"
+                            data-url="{% url 'vehicle_models' %}"
+                            required
+                            disabled
+                        >
+                            <option value="">Select model</option>
+                        </select>
+                    
+                        <label for="vehicle-type">Vehicle Type</label>
+                        <select
+                            id="vehicle-type"
+                            name="vehicle_type"
+                            required
+                        >
+                            <option value="">Select vehicle type</option>
+                            <option value="sedan">Sedan</option>
+                            <option value="suv">SUV</option>
+                            <option value="truck">Truck</option>
+                            <option value="coupe">Coupe</option>
+                            <option value="hatchback">Hatchback</option>
+                            <option value="van">Van</option>
+                            <option value="wagon">Wagon</option>
+                            <option value="other">Other</option>
+                        </select>
+                    
+                    {% endif %}
+                    
                 </div>
 
 
-                <!-- Services -->
-                <div class="form-section">
+                
 
-                    <h2>2. Choose Your Services</h2>
-
-                    <p class="form-description">
-                        Select all services you would like.
-                    </p>
-
-
+            <!-- Services -->
+            <div class="form-section">
+            
+                <h2>2. Choose Your Services</h2>
+            
+                <p class="form-description">
+                    Select all services you would like.
+                </p>
+            
+                {% for service in available_services %}
+            
                     <label class="service-option">
-
                         <input
                             type="checkbox"
                             name="service"
-                            value="basic-wash"
+                            value="{{ service.code }}"
+                            data-price="{{ service.price_cents }}"
+                            data-duration="{{ service.duration_minutes }}"
+                            class="service-checkbox"
                         >
-
+                    
                         <span>
-                            <strong>Basic Wash</strong>
-                            <small>$15 • 15 minutes</small>
+                            <strong>{{ service.name }}</strong>
+                        
+                            <small>
+                                ${{ service.price_dollars|floatformat:2 }}
+                                • {{ service.duration_minutes }} minutes
+                            </small>
                         </span>
-
                     </label>
+                
+                {% empty %}
+                
+                    <p>No services are currently available.</p>
+                
+                {% endfor %}
+                
+            </div>
 
-
-                    <label class="service-option">
-
-                        <input
-                            type="checkbox"
-                            name="service"
-                            value="triple-foam"
-                        >
-
-                        <span>
-                            <strong>Triple Foam</strong>
-                            <small>+$5 • +5 minutes</small>
-                        </span>
-
-                    </label>
-
-
-                    <label class="service-option">
-
-                        <input
-                            type="checkbox"
-                            name="service"
-                            value="undercarriage"
-                        >
-
-                        <span>
-                            <strong>Undercarriage Wash</strong>
-                            <small>+$7 • +5 minutes</small>
-                        </span>
-
-                    </label>
-
-
-                    <label class="service-option">
-
-                        <input
-                            type="checkbox"
-                            name="service"
-                            value="vacuum"
-                        >
-
-                        <span>
-                            <strong>Interior Vacuum</strong>
-                            <small>+$10 • +10 minutes</small>
-                        </span>
-
-                    </label>
-
-
-                    <label class="service-option">
-
-                        <input
-                            type="checkbox"
-                            name="service"
-                            value="detail"
-                        >
-
-                        <span>
-                            <strong>Interior Detail</strong>
-                            <small>+$40 • +30 minutes</small>
-                        </span>
-
-                    </label>
-
-
-                    <label class="service-option">
-
-                        <input
-                            type="checkbox"
-                            name="service"
-                            value="tire-shine"
-                        >
-
-                        <span>
-                            <strong>Tire Shine</strong>
-                            <small>+$5 • +5 minutes</small>
-                        </span>
-
-                    </label>
-
-                </div>
-
+               
                 <!-- Customer Information -->
-<div class="form-section">
-
-    <h2>Customer Information</h2>
-
-    <p class="form-description">
-        Enter your contact information so we can send you an appointment confirmation.
-    </p>
-
-    <label for="first-name">First Name</label>
-    <input
-        type="text"
-        id="first-name"
-        name="first_name"
-        placeholder="Enter your first name"
-        required
-    >
-
-    <label for="last-name">Last Name</label>
-    <input
-        type="text"
-        id="last-name"
-        name="last_name"
-        placeholder="Enter your last name"
-        required
-    >
-
-    <label for="email">Email</label>
-    <input
-        type="email"
-        id="email"
-        name="email"
-        placeholder="Enter your email"
-        required
-    >
-
-    <label for="phone">Phone Number</label>
-    <input
-        type="tel"
-        id="phone"
-        name="phone"
-        placeholder="Enter your phone number"
-        required
-    >
-
-</div>
-
-
+                <div class="form-section">
+                
+                    <h2>Customer Information</h2>
+                
+                    {% if user.is_authenticated %}
+                
+                        <!-- Logged-in customer information -->
+                        <p class="form-description">
+                            Your account information will be used
+                            for this appointment.
+                        </p>
+                    
+                        <p>
+                            <strong>Booking as:</strong>
+                            {{ user.first_name }} {{ user.last_name }}
+                        </p>
+                    
+                        <p>
+                            <strong>Email:</strong>
+                            {{ user.email }}
+                        </p>
+                    
+                    {% else %}
+                    
+                        <!-- Guest customer information -->
+                        <p class="form-description">
+                            Enter your contact information so we can
+                            send you an appointment confirmation.
+                        </p>
+                    
+                        <label for="first-name">First Name</label>
+                        <input
+                            type="text"
+                            id="first-name"
+                            name="first_name"
+                            placeholder="Enter your first name"
+                            required
+                        >
+                    
+                        <label for="last-name">Last Name</label>
+                        <input
+                            type="text"
+                            id="last-name"
+                            name="last_name"
+                            placeholder="Enter your last name"
+                            required
+                        >
+                    
+                        <label for="email">Email</label>
+                        <input
+                            type="email"
+                            id="email"
+                            name="email"
+                            placeholder="Enter your email"
+                            required
+                        >
+                    
+                        <label for="phone">Phone Number</label>
+                        <input
+                            type="tel"
+                            id="phone"
+                            name="phone"
+                            placeholder="Enter your phone number"
+                            required
+                        >
+                    
+                    {% endif %}
+                    
+                </div>
+                
                 <!-- Date -->
                 <div class="form-section">
-
+                
                     <h2>3. Choose a Date</h2>
-
-                    <label for="date">
-                        Appointment Date
-                    </label>
-
+                
+                    <label for="date">Appointment Date</label>
+                
                     <input
                         type="date"
                         id="date"
                         name="date"
+                        required
                     >
-
+                
                 </div>
 
 
                 <!-- Time -->
-                <div class="form-section">
+                        <div class="form-section">
+                        
+                            <h2>4. Choose a Time</h2>
+                        
+                            <label for="time">Available Time</label>
+                        
+                            <select
+                        id="time"
+                        name="time"
+                        data-url="{% url 'available_booking_slots' %}"
+                        required
+                        disabled
+        >
+            <option value="">
+                Select services and a date first
+            </option>
+        </select>
 
-                    <h2>4. Choose a Time</h2>
-
-                    <label for="time">
-                        Available Time
-                    </label>
-
-                    <select id="time" name="time">
-
-                        <option value="">
-                            Select a time
-                        </option>
-
-                        <option value="9:00">
-                            9:00 AM
-                        </option>
-
-                        <option value="9:30">
-                            9:30 AM
-                        </option>
-
-                        <option value="10:00">
-                            10:00 AM
-                        </option>
-
-                        <option value="10:30">
-                            10:30 AM
-                        </option>
-
-                        <option value="11:00">
-                            11:00 AM
-                        </option>
-
-                    </select>
-
-                    <p class="availability-note">
-                        Available times will eventually be calculated
-                        automatically based on existing appointments.
+                    <p
+                        id="availability-message"
+                        class="availability-note"
+                        aria-live="polite"
+                    >
+                        Choose your services and date to see available times.
                     </p>
 
                 </div>
 
+                                <!-- AI Appointment Recommendation -->
+                <div
+                    class="form-section"
+                    id="ai-recommendation-section"
+                    data-url="{% url 'ai_booking_recommendation' %}"
+                >
+                    <h2>✨ CleanRide AI Assistant</h2>
 
+                    <p class="form-description">
+                        Need help choosing an appointment time?
+                        Let our AI assistant recommend an available
+                        time based on your selected services.
+                    </p>
+                
+                    <button
+                        type="button"
+                        id="ai-recommend-button"
+                        class="booking-button"
+                    >
+                        ✨ Get AI Recommendation
+                    </button>
+                
+                    <div
+                        id="ai-recommendation-result"
+                        hidden
+                        aria-live="polite"
+                    >
+                        <h3>Recommended Appointment</h3>
+                
+                        <p>
+                            <strong>Suggested Time:</strong>
+                            <span id="ai-recommended-time"></span>
+                        </p>
+                    
+                        <p id="ai-recommendation-reason"></p>
+                    
+                        <button
+                            type="button"
+                            id="ai-use-time-button"
+                            class="booking-button"
+                        >
+                            Use This Time
+                        </button>
+                    </div>
+                
+                    <p
+                        id="ai-recommendation-error"
+                        class="availability-note"
+                        role="status"
+                        hidden
+                    ></p>
+                </div>
+                
+                
                 <!-- Appointment Summary -->
                 <div class="appointment-summary">
-
+                
                     <h2>Appointment Summary</h2>
-
+                
                     <div class="summary-row">
                         <span>Services</span>
-                        <span>Basic Wash</span>
+                        <span id="summary-services">
+                            No services selected
+                        </span>
                     </div>
-
+                
                     <div class="summary-row">
                         <span>Estimated Duration</span>
-                        <span>15 minutes</span>
+                        <span id="summary-duration">
+                            0 minutes
+                        </span>
                     </div>
-
+                
                     <div class="summary-row total">
                         <span>Total</span>
-                        <span>$15.00</span>
+                        <span id="summary-price">
+                            $0.00
+                        </span>
                     </div>
 
-                </div>
+</div>
 
 
                 <!-- Submit -->
@@ -299,12 +392,12 @@
                     Continue to Confirmation
                 </button>
 
-
             </form>
 
         </section>
 
     </main>
+    <script src="{% static 'js/booking.js' %}" defer></script>
+    
 
-
-    {% endblock %}
+{% endblock %}
