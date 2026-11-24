@@ -163,3 +163,27 @@ MIGRATION_MODULES = {
     "auth": "mongo_migrations.auth",
     "contenttypes": "mongo_migrations.contenttypes",
 }
+# =====================================
+# EMAIL CONFIGURATION
+# =====================================
+
+MAILERS = {
+    "default": {
+        "BACKEND": "django.core.mail.backends.smtp.EmailBackend",
+        "OPTIONS": {
+            "host": "smtp.gmail.com",
+            "port": 587,
+            "use_tls": True,
+            "username": os.getenv("EMAIL_HOST_USER"),
+            "password": os.getenv("EMAIL_HOST_PASSWORD"),
+            "timeout": 30,
+        },
+    },
+}
+
+DEFAULT_FROM_EMAIL = (
+    f"CleanRide <{os.getenv('EMAIL_HOST_USER')}>"
+)
+
+# Password reset links expire after 30 minutes.
+PASSWORD_RESET_TIMEOUT = 1800
