@@ -10,6 +10,7 @@ def signup(request):
         first_name = request.POST.get("first_name", "").strip()
         last_name = request.POST.get("last_name", "").strip()
         email = request.POST.get("email", "").strip().lower()
+        phone = request.POST.get("phone", "").strip()
         password = request.POST.get("password", "")
         confirm_password = request.POST.get("confirm_password", "")
 
@@ -22,7 +23,6 @@ def signup(request):
             return render(request, "signup.html")
 
         User.objects.create_user(
-            username=email,
             email=email,
             password=password,
             first_name=first_name,

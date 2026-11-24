@@ -1,7 +1,7 @@
-{% extends 'base.html' %} 
+
+{% extends 'base.html' %}
 
 {% block content %}
-
 
     <!-- Booking Page -->
     <main class="booking-page">
@@ -16,11 +16,10 @@
 
         </section>
 
-
         <section class="booking-container">
 
-            <form>
-
+            <form method="POST" action="{% url 'booking' %}">
+                {% csrf_token %}
 
                 <!-- Vehicle -->
                 <div class="form-section">
@@ -49,7 +48,6 @@
 
                 </div>
 
-
                 <!-- Services -->
                 <div class="form-section">
 
@@ -58,7 +56,6 @@
                     <p class="form-description">
                         Select all services you would like.
                     </p>
-
 
                     <label class="service-option">
 
@@ -75,7 +72,6 @@
 
                     </label>
 
-
                     <label class="service-option">
 
                         <input
@@ -90,7 +86,6 @@
                         </span>
 
                     </label>
-
 
                     <label class="service-option">
 
@@ -107,7 +102,6 @@
 
                     </label>
 
-
                     <label class="service-option">
 
                         <input
@@ -123,7 +117,6 @@
 
                     </label>
 
-
                     <label class="service-option">
 
                         <input
@@ -138,7 +131,6 @@
                         </span>
 
                     </label>
-
 
                     <label class="service-option">
 
@@ -158,52 +150,51 @@
                 </div>
 
                 <!-- Customer Information -->
-<div class="form-section">
+                <div class="form-section">
 
-    <h2>Customer Information</h2>
+                    <h2>Customer Information</h2>
 
-    <p class="form-description">
-        Enter your contact information so we can send you an appointment confirmation.
-    </p>
+                    <p class="form-description">
+                        Enter your contact information so we can send you an appointment confirmation.
+                    </p>
 
-    <label for="first-name">First Name</label>
-    <input
-        type="text"
-        id="first-name"
-        name="first_name"
-        placeholder="Enter your first name"
-        required
-    >
+                    <label for="first-name">First Name</label>
+                    <input
+                        type="text"
+                        id="first-name"
+                        name="first_name"
+                        placeholder="Enter your first name"
+                        required
+                    >
 
-    <label for="last-name">Last Name</label>
-    <input
-        type="text"
-        id="last-name"
-        name="last_name"
-        placeholder="Enter your last name"
-        required
-    >
+                    <label for="last-name">Last Name</label>
+                    <input
+                        type="text"
+                        id="last-name"
+                        name="last_name"
+                        placeholder="Enter your last name"
+                        required
+                    >
 
-    <label for="email">Email</label>
-    <input
-        type="email"
-        id="email"
-        name="email"
-        placeholder="Enter your email"
-        required
-    >
+                    <label for="email">Email</label>
+                    <input
+                        type="email"
+                        id="email"
+                        name="email"
+                        placeholder="Enter your email"
+                        required
+                    >
 
-    <label for="phone">Phone Number</label>
-    <input
-        type="tel"
-        id="phone"
-        name="phone"
-        placeholder="Enter your phone number"
-        required
-    >
+                    <label for="phone">Phone Number</label>
+                    <input
+                        type="tel"
+                        id="phone"
+                        name="phone"
+                        placeholder="Enter your phone number"
+                        required
+                    >
 
-</div>
-
+                </div>
 
                 <!-- Date -->
                 <div class="form-section">
@@ -221,7 +212,6 @@
                     >
 
                 </div>
-
 
                 <!-- Time -->
                 <div class="form-section">
@@ -267,7 +257,6 @@
 
                 </div>
 
-
                 <!-- Appointment Summary -->
                 <div class="appointment-summary">
 
@@ -290,7 +279,6 @@
 
                 </div>
 
-
                 <!-- Submit -->
                 <button
                     type="submit"
@@ -299,12 +287,10 @@
                     Continue to Confirmation
                 </button>
 
-
             </form>
 
         </section>
 
     </main>
 
-
-    {% endblock %}
+{% endblock %}

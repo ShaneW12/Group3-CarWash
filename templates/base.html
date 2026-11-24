@@ -24,11 +24,24 @@
                 <li><a href="{% url 'services' %}">Services</a></li>
                 <li><a href="{% url 'booking' %}">Book Appointment</a></li>
                 <li><a href="{% url 'about' %}">About</a></li>
+                <li><a href="{% url 'my_appointments' %}">My Appointments</a></li>
+                {% if user.is_authenticated %}
+                <li><form method="post" action="{% url 'logout' %}" class="nav-logout">{% csrf_token %}<button type="submit">Logout</button></form></li>
+                {% else %}
                 <li><a href="{% url 'login' %}">Login</a></li>
+                {% endif %}
             </ul>
 
         </nav>
     </header>
+
+     {% if messages %}
+        <div class="site-messages" role="status">
+          {% for message in messages %}
+            <p class="site-message{% if message.tags %} {{ message.tags }}{% endif %}">{{ message }}</p>
+          {% endfor %}
+        </div>
+     {% endif %}
 
      {% block content %}
      {% endblock %}
