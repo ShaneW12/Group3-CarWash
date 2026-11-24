@@ -1,6 +1,7 @@
 
 from django.urls import path
 from . import views
+from customers.views import PasswordResetRequestView
 
 urlpatterns = [
     path("", views.home, name="index"),
@@ -23,9 +24,10 @@ urlpatterns = [
     ),
 
     path("signup/", views.signup, name="signup"),
+
     path(
-        "forgot_password/",
-        views.forgot_password,
-        name="forgot_password"
-    ),
+    "forgot_password/",
+    PasswordResetRequestView.as_view(),
+    name="forgot_password"
+),
 ]
