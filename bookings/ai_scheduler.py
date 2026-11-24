@@ -9,6 +9,7 @@ from django.conf import settings
 from google import genai
 from google.genai import types
 from google.genai.errors import ServerError, ClientError
+import random
 
 
 # Change this through your environment if needed.
@@ -43,6 +44,7 @@ def recommend_appointment(
     duration_minutes,
     available_slots
 ):
+   
     """
     Ask Gemini to recommend one of the available
     appointment starting times.
@@ -79,6 +81,8 @@ def recommend_appointment(
     # Never trust the LLM to determine availability.
     # These slots must come from scheduling.py.
     valid_slots = set(available_slots)
+    shuffled_slots = list(available_slots)
+    random.shuffle(shuffled_slots)
 
     api_key = os.getenv("GEMINI_API_KEY")
 
@@ -108,7 +112,7 @@ def recommend_appointment(
         )
         .replace(
             "{available_slots}",
-            json.dumps(available_slots)
+            json.dumps(shuffled_slots)
         )
     )
 
@@ -119,7 +123,7 @@ def recommend_appointment(
                 model=GEMINI_MODEL,
                 contents=prompt,
                 config=types.GenerateContentConfig(
-                    temperature=0.2,
+                    
                     max_output_tokens=500,
                     response_mime_type="application/json",
                     response_schema={
