@@ -144,44 +144,86 @@
 
                 
 
-            <!-- Services -->
-            <div class="form-section">
             
-                <h2>2. Choose Your Services</h2>
-            
-                <p class="form-description">
-                    Select all services you would like.
-                </p>
-            
-                {% for service in available_services %}
-            
-                    <label class="service-option">
-                        <input
-                            type="checkbox"
-                            name="service"
-                            value="{{ service.code }}"
-                            data-price="{{ service.price_cents }}"
-                            data-duration="{{ service.duration_minutes }}"
-                            class="service-checkbox"
-                        >
+                    <!-- Services -->
+                    <div class="form-section">
                     
-                        <span>
-                            <strong>{{ service.name }}</strong>
+                        <h2>2. Choose Your Services</h2>
+                    
+                        <p class="form-description">
+                            Customize your wash experience by selecting
+                            all the services you would like.
+                        </p>
+                    
+                        <div class="booking-service-grid">
                         
-                            <small>
-                                ${{ service.price_dollars|floatformat:2 }}
-                                • {{ service.duration_minutes }} minutes
-                            </small>
-                        </span>
-                    </label>
-                
-                {% empty %}
-                
-                    <p>No services are currently available.</p>
-                
-                {% endfor %}
-                
-            </div>
+                            {% for service in available_services %}
+                        
+                                <label class="service-option">
+                                
+                                    <input
+                                        type="checkbox"
+                                        name="service"
+                                        value="{{ service.code }}"
+                                        data-price="{{ service.price_cents }}"
+                                        data-duration="{{ service.duration_minutes }}"
+                                        class="service-checkbox"
+                                    >
+                                
+                                    <div class="service-card-content">
+                                    
+                                        <div class="service-image-container">
+                                        
+                                            {% with image_path="images/services/"|add:service.code|add:".jpeg" %}
+                                        
+                                                <img
+                                                    src="{% static image_path %}"
+                                                    alt=""
+                                                    class="service-image"
+                                                    loading="lazy"
+                                                >
+                                        
+                                            {% endwith %}
+                                        
+                                            <span class="service-selection-indicator">
+                                                ✓
+                                            </span>
+                                        
+                                        </div>
+                                    
+                                        <div class="service-details">
+                                        
+                                            <strong class="service-name">
+                                                {{ service.name }}
+                                            </strong>
+                                        
+                                            <div class="service-card-meta">
+                                            
+                                                <span class="service-price">
+                                                    ${{ service.price_dollars|floatformat:2 }}
+                                                </span>
+                                            
+                                                <small class="service-duration">
+                                                    {{ service.duration_minutes }} min
+                                                </small>
+                                            
+                                            </div>
+                                        
+                                        </div>
+                                    
+                                    </div>
+                                
+                                </label>
+                            
+                            {% empty %}
+                            
+                                <p>No services are currently available.</p>
+                            
+                            {% endfor %}
+                            
+                        </div>
+                    
+                    </div>
 
                
                 <!-- Customer Information -->
