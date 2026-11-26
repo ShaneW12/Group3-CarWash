@@ -2076,4 +2076,1130 @@ margin-bottom: 10px;
     }
 
 }
+/* ==========================================
+   CLEANRIDE SERVICES REDESIGN
+========================================== */
+
+.cleanride-services {
+    --services-navy: #06182c;
+    --services-cyan: #22d3ee;
+    --services-muted: #64748b;
+
+    background: #f8fafc;
+}
+
+
+/* Services Hero */
+
+.services-hero {
+    padding: 95px 8%;
+    text-align: center;
+    color: white;
+
+    background:
+        radial-gradient(
+            ellipse at 80% 20%,
+            rgba(14, 165, 233, 0.25),
+            transparent 55%
+        ),
+        linear-gradient(
+            135deg,
+            #06182c,
+            #0c4a6e
+        );
+}
+
+.services-eyebrow {
+    display: block;
+    color: #67e8f9;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 3px;
+    margin-bottom: 20px;
+}
+
+.services-hero h1 {
+    font-size: clamp(36px, 5vw, 64px);
+    line-height: 1.15;
+    letter-spacing: -1.5px;
+    margin-bottom: 20px;
+}
+
+.services-hero p {
+    color: #cbd5e1;
+    max-width: 650px;
+    margin: 0 auto;
+    font-size: 18px;
+    line-height: 1.8;
+}
+
+.services-benefits {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 25px;
+
+    color: #67e8f9;
+    margin-top: 35px;
+    font-size: 14px;
+}
+
+
+/* Catalog Section */
+
+.service-catalog {
+    max-width: 1500px;
+    margin: 0 auto;
+    padding: 75px 6%;
+}
+
+.catalog-heading {
+    text-align: center;
+    margin-bottom: 45px;
+}
+
+.catalog-heading h2 {
+    font-size: clamp(28px, 3vw, 42px);
+    color: #0f172a;
+    margin-bottom: 12px;
+}
+
+.catalog-heading p {
+    color: #64748b;
+}
+
+
+/* Service Grid */
+
+.catalog-grid {
+    display: grid;
+    grid-template-columns:
+        repeat(3, minmax(0, 1fr));
+
+    gap: 25px;
+}
+
+.catalog-card {
+    position: relative;
+    display: block;
+    cursor: pointer;
+}
+
+.catalog-checkbox {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    opacity: 0;
+}
+
+.catalog-card-content {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+
+    background: white;
+    border: 2px solid #e2e8f0;
+    border-radius: 18px;
+    overflow: hidden;
+
+    box-shadow:
+        0 5px 20px rgba(15, 23, 42, 0.06);
+
+    transition:
+        transform 0.3s ease,
+        box-shadow 0.3s ease,
+        border-color 0.3s ease;
+}
+
+.catalog-card:hover .catalog-card-content {
+    transform: translateY(-7px);
+    border-color: #22d3ee;
+
+    box-shadow:
+        0 12px 35px rgba(14, 165, 233, 0.18);
+}
+
+
+/* Service Image */
+
+.catalog-image {
+    position: relative;
+    height: 220px;
+    overflow: hidden;
+    background: #e2e8f0;
+}
+
+.catalog-image img {
+    width: 100%;
+    height: 100%;
+    display: block;
+    object-fit: cover;
+
+    transition: transform 0.5s ease;
+}
+
+.catalog-card:hover .catalog-image img {
+    transform: scale(1.08);
+}
+
+
+/* Service Information */
+
+.catalog-details {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    padding: 25px;
+}
+
+.catalog-details h3 {
+    font-size: 22px;
+    color: #0f172a;
+    margin-bottom: 20px;
+}
+
+.catalog-meta {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+
+    gap: 12px;
+    margin-bottom: 22px;
+}
+
+.catalog-meta strong {
+    color: #0284c7;
+    font-size: 28px;
+}
+
+.catalog-meta span {
+    color: #475569;
+    background: #f1f5f9;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 13px;
+}
+
+.catalog-action {
+    margin-top: auto;
+    padding: 13px;
+
+    background: #f1f5f9;
+    color: #0369a1;
+
+    border-radius: 8px;
+    text-align: center;
+    font-weight: 700;
+
+    transition:
+        background 0.25s ease,
+        color 0.25s ease;
+}
+
+
+/* Selection Indicator */
+
+.catalog-check {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+
+    width: 35px;
+    height: 35px;
+
+    display: grid;
+    place-items: center;
+
+    background: white;
+    color: transparent;
+    border: 2px solid #cbd5e1;
+    border-radius: 50%;
+
+    font-weight: bold;
+    font-size: 20px;
+}
+
+.catalog-checkbox:checked + .catalog-card-content {
+    border-color: #0891b2;
+
+    box-shadow:
+        0 0 0 3px rgba(34, 211, 238, 0.15),
+        0 10px 30px rgba(14, 165, 233, 0.12);
+}
+
+.catalog-checkbox:checked + .catalog-card-content
+.catalog-check {
+    background: #0891b2;
+    border-color: #0891b2;
+    color: white;
+}
+
+.catalog-checkbox:checked + .catalog-card-content
+.catalog-action {
+    background: #22d3ee;
+    color: #06182c;
+}
+
+.catalog-checkbox:focus-visible + .catalog-card-content {
+    outline: 3px solid #1479ff;
+    outline-offset: 5px;
+}
+
+
+/* Custom Wash Builder */
+
+.wash-builder-summary {
+    margin-top: 50px;
+    padding: 35px;
+
+    background:
+        linear-gradient(
+            135deg,
+            #06182c,
+            #0c304b
+        );
+
+    color: white;
+    border-radius: 18px;
+}
+
+.wash-builder-heading h2 {
+    font-size: 28px;
+    margin-bottom: 10px;
+}
+
+.wash-builder-heading p {
+    color: #cbd5e1;
+}
+
+#builder-selected-services {
+    margin: 25px 0;
+    padding: 20px;
+
+    background: rgba(255, 255, 255, 0.06);
+    border-radius: 10px;
+    color: #cbd5e1;
+    line-height: 1.8;
+}
+
+.builder-totals {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+
+    padding: 25px 0;
+    border-top: 1px solid #334155;
+}
+
+.builder-totals span {
+    display: block;
+    color: #cbd5e1;
+    font-size: 14px;
+    margin-bottom: 8px;
+}
+
+.builder-totals strong {
+    font-size: 32px;
+    color: #22d3ee;
+}
+
+.builder-actions {
+    display: flex;
+    justify-content: flex-end;
+    flex-wrap: wrap;
+    gap: 15px;
+}
+
+.builder-submit,
+.builder-clear {
+    padding: 15px 25px;
+    border-radius: 8px;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+
+    transition:
+        transform 0.25s ease,
+        background 0.25s ease;
+}
+
+.builder-submit {
+    background: #22d3ee;
+    color: #06182c;
+    border: none;
+}
+
+.builder-submit:hover {
+    background: #67e8f9;
+    transform: translateY(-3px);
+}
+
+.builder-clear {
+    background: transparent;
+    border: 1px solid #64748b;
+    color: white;
+}
+
+.builder-clear:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.builder-submit:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+    transform: none;
+}
+
+
+/* Responsive Layout */
+
+@media (max-width: 1100px) {
+
+    .catalog-grid {
+        grid-template-columns:
+            repeat(2, minmax(0, 1fr));
+    }
+
+}
+
+@media (max-width: 600px) {
+
+    .catalog-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .services-hero {
+        padding: 65px 6%;
+    }
+
+    .service-catalog {
+        padding: 50px 5%;
+    }
+
+    .wash-builder-summary {
+        padding: 22px;
+    }
+
+    .builder-totals {
+        grid-template-columns: 1fr;
+    }
+
+    .builder-actions {
+        flex-direction: column;
+    }
+
+}
+
+@media (prefers-reduced-motion: reduce) {
+
+    .cleanride-services *,
+    .catalog-card:hover .catalog-card-content,
+    .catalog-card:hover .catalog-image img {
+        transition: none !important;
+        transform: none !important;
+    }
+
+}
+/* ==========================================
+   CLEANRIDE NAVIGATION REDESIGN
+========================================== */
+
+.site-header {
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+
+    background: rgba(255, 255, 255, 0.96);
+
+    border-bottom: 1px solid rgba(226, 232, 240, 0.8);
+
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+
+    transition:
+        background 0.3s ease,
+        box-shadow 0.3s ease;
+}
+
+
+/* Navigation Container */
+
+.cleanride-navbar {
+    max-width: 1600px;
+    margin: 0 auto;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    gap: 35px;
+    padding: 22px 6%;
+
+    transition: padding 0.3s ease;
+}
+
+
+/* Compact Navigation When Scrolling */
+
+.site-header.scrolled {
+    background: rgba(255, 255, 255, 0.90);
+
+    box-shadow:
+        0 5px 25px rgba(15, 23, 42, 0.08);
+}
+
+.site-header.scrolled .cleanride-navbar {
+    padding-top: 12px;
+    padding-bottom: 12px;
+}
+
+
+/* ==========================================
+   CLEANRIDE BRAND
+========================================== */
+
+.cleanride-brand {
+    display: flex;
+    flex-direction: column;
+
+    flex-shrink: 0;
+
+    text-decoration: none;
+    line-height: 1;
+}
+
+.brand-name {
+    font-size: 32px;
+    font-weight: 900;
+    letter-spacing: -1.8px;
+
+    color: #06182c;
+}
+
+.brand-name > span {
+    color: #0891b2;
+}
+
+.brand-subtitle {
+    margin-top: 7px;
+
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 5px;
+
+    text-align: center;
+    color: #64748b;
+}
+
+
+/* ==========================================
+   MAIN NAVIGATION LINKS
+========================================== */
+
+.navigation-menu {
+    display: flex;
+    align-items: center;
+
+    flex: 1;
+    justify-content: space-between;
+
+    gap: 30px;
+}
+
+.main-nav-links {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    flex: 1;
+
+    list-style: none;
+    gap: 35px;
+}
+
+.main-nav-link {
+    position: relative;
+
+    display: inline-block;
+
+    padding: 12px 0;
+
+    color: #334155;
+    text-decoration: none;
+
+    font-size: 15px;
+    font-weight: 600;
+
+    transition: color 0.25s ease;
+}
+
+
+/* Animated Navigation Underline */
+
+.main-nav-link::after {
+    content: "";
+
+    position: absolute;
+    left: 0;
+    bottom: 3px;
+
+    width: 100%;
+    height: 3px;
+
+    background: #22d3ee;
+    border-radius: 10px;
+
+    transform: scaleX(0);
+    transform-origin: center;
+
+    transition: transform 0.25s ease;
+}
+
+.main-nav-link:hover {
+    color: #0891b2;
+}
+
+.main-nav-link:hover::after,
+.main-nav-link.active::after {
+    transform: scaleX(1);
+}
+
+.main-nav-link.active {
+    color: #0891b2;
+}
+
+
+/* ==========================================
+   NAVIGATION ACTION BUTTONS
+========================================== */
+
+.navigation-actions {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+
+/* Book Now Button */
+
+.nav-book-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    gap: 12px;
+
+    padding: 13px 22px;
+
+    background: #06182c;
+    color: white;
+
+    border-radius: 10px;
+
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 700;
+
+    white-space: nowrap;
+
+    transition:
+        background 0.3s ease,
+        transform 0.3s ease,
+        box-shadow 0.3s ease;
+}
+
+.nav-book-button:hover {
+    background: #0c4a6e;
+
+    transform: translateY(-2px);
+
+    box-shadow:
+        0 6px 20px rgba(34, 211, 238, 0.35);
+}
+
+.nav-book-arrow {
+    font-size: 20px;
+    line-height: 1;
+
+    color: #22d3ee;
+
+    transition: transform 0.3s ease;
+}
+
+.nav-book-button:hover .nav-book-arrow {
+    transform: translateX(4px);
+}
+
+
+/* Guest Login Button */
+
+.nav-login-button {
+    padding: 12px 22px;
+
+    border: 1px solid #cbd5e1;
+    border-radius: 10px;
+
+    color: #06182c;
+    background: white;
+
+    font-size: 14px;
+    font-weight: 700;
+
+    text-decoration: none;
+
+    transition:
+        border-color 0.25s ease,
+        background 0.25s ease;
+}
+
+.nav-login-button:hover {
+    border-color: #22d3ee;
+    background: #ecfeff;
+}
+
+
+/* ==========================================
+   ACCOUNT DROPDOWN
+========================================== */
+
+.account-dropdown {
+    position: relative;
+}
+
+.account-toggle {
+    display: flex;
+    align-items: center;
+
+    gap: 10px;
+
+    padding: 7px 13px 7px 7px;
+
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 600;
+
+    color: #334155;
+    cursor: pointer;
+
+    white-space: nowrap;
+
+    transition:
+        background 0.25s ease,
+        border-color 0.25s ease;
+}
+
+.account-toggle:hover,
+.account-dropdown.open .account-toggle {
+    background: #ecfeff;
+    border-color: #67e8f9;
+}
+
+
+/* Account Avatar */
+
+.account-avatar {
+    display: grid;
+    place-items: center;
+
+    width: 35px;
+    height: 35px;
+
+    border-radius: 50%;
+
+    background: linear-gradient(
+        135deg,
+        #0891b2,
+        #22d3ee
+    );
+
+    color: white;
+
+    font-size: 16px;
+    font-weight: 800;
+}
+
+.account-chevron {
+    transition: transform 0.3s ease;
+}
+
+.account-dropdown.open .account-chevron {
+    transform: rotate(180deg);
+}
+
+
+/* Dropdown Menu */
+
+.account-menu {
+    position: absolute;
+
+    top: calc(100% + 15px);
+    right: 0;
+
+    width: 275px;
+
+    padding: 10px;
+
+    background: white;
+
+    border: 1px solid #e2e8f0;
+    border-radius: 15px;
+
+    box-shadow:
+        0 15px 45px rgba(15, 23, 42, 0.15);
+
+    opacity: 0;
+    visibility: hidden;
+
+    transform: translateY(-10px) scale(0.97);
+    transform-origin: top right;
+
+    transition:
+        opacity 0.25s ease,
+        visibility 0.25s ease,
+        transform 0.25s ease;
+}
+
+.account-dropdown.open .account-menu {
+    opacity: 1;
+    visibility: visible;
+
+    transform: translateY(0) scale(1);
+}
+
+
+/* Account Information */
+
+.account-menu-header {
+    padding: 15px;
+}
+
+.account-menu-header strong {
+    display: block;
+
+    color: #0f172a;
+    font-size: 15px;
+
+    margin-bottom: 5px;
+}
+
+.account-menu-header small {
+    display: block;
+
+    color: #64748b;
+    font-size: 12px;
+
+    overflow-wrap: anywhere;
+}
+
+.account-menu-label {
+    display: block;
+
+    padding: 10px 15px 5px;
+
+    color: #64748b;
+
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+}
+
+
+/* Dropdown Links */
+
+.account-menu-link {
+    display: block;
+
+    padding: 13px 15px;
+
+    border-radius: 8px;
+
+    text-decoration: none;
+    color: #334155;
+
+    font-size: 14px;
+    font-weight: 500;
+
+    transition:
+        background 0.2s ease,
+        color 0.2s ease;
+}
+
+.account-menu-link:hover {
+    background: #f0f9ff;
+    color: #0891b2;
+}
+
+.manager-menu-link {
+    color: #0369a1;
+    font-weight: 700;
+}
+
+.account-divider {
+    height: 1px;
+
+    background: #e2e8f0;
+
+    margin: 8px 5px;
+}
+
+
+/* Logout */
+
+.account-logout-form {
+    margin: 0;
+}
+
+.account-logout-button {
+    width: 100%;
+
+    padding: 13px 15px;
+
+    border: none;
+    border-radius: 8px;
+
+    background: transparent;
+    color: #dc2626;
+
+    text-align: left;
+
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 600;
+
+    cursor: pointer;
+
+    transition: background 0.2s ease;
+}
+
+.account-logout-button:hover {
+    background: #fef2f2;
+}
+
+
+/* ==========================================
+   MOBILE HAMBURGER BUTTON
+========================================== */
+
+.mobile-menu-toggle {
+    display: none;
+
+    width: 44px;
+    height: 44px;
+
+    padding: 10px;
+
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+
+    background: white;
+
+    cursor: pointer;
+}
+
+.mobile-menu-toggle span {
+    display: block;
+
+    width: 22px;
+    height: 2px;
+
+    background: #06182c;
+
+    border-radius: 3px;
+    margin: 5px 0;
+
+    transition:
+        transform 0.3s ease,
+        opacity 0.3s ease;
+}
+
+
+/* Animate Hamburger Into X */
+
+.mobile-menu-toggle.open span:nth-child(1) {
+    transform: translateY(7px) rotate(45deg);
+}
+
+.mobile-menu-toggle.open span:nth-child(2) {
+    opacity: 0;
+}
+
+.mobile-menu-toggle.open span:nth-child(3) {
+    transform: translateY(-7px) rotate(-45deg);
+}
+
+
+/* ==========================================
+   RESPONSIVE NAVIGATION
+========================================== */
+
+@media (max-width: 1000px) {
+
+    .cleanride-navbar {
+        gap: 20px;
+        padding: 18px 4%;
+    }
+
+    .main-nav-links {
+        gap: 22px;
+    }
+
+    .navigation-menu {
+        gap: 20px;
+    }
+
+    .brand-name {
+        font-size: 28px;
+    }
+
+}
+
+
+@media (max-width: 850px) {
+
+    .cleanride-navbar {
+        position: relative;
+        flex-wrap: wrap;
+    }
+
+    .mobile-menu-toggle {
+        display: block;
+    }
+
+    .navigation-menu {
+        display: none;
+
+        width: 100%;
+        flex-basis: 100%;
+
+        flex-direction: column;
+        align-items: stretch;
+
+        gap: 20px;
+
+        padding: 15px 0 5px;
+    }
+
+    .navigation-menu.open {
+        display: flex;
+
+        max-height: calc(100dvh - 100px);
+        overflow-y: auto;
+
+        animation: nav-slide-in 0.3s ease;
+    }
+
+    .main-nav-links {
+        flex-direction: column;
+        align-items: stretch;
+
+        gap: 5px;
+    }
+
+    .main-nav-link {
+        display: block;
+
+        padding: 13px 15px;
+
+        border-radius: 8px;
+    }
+
+    .main-nav-link::after {
+        display: none;
+    }
+
+    .main-nav-link.active,
+    .main-nav-link:hover {
+        background: #ecfeff;
+        color: #0891b2;
+    }
+
+    .navigation-actions {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .nav-book-button,
+    .nav-login-button {
+        text-align: center;
+        justify-content: center;
+    }
+
+    .account-toggle {
+        width: 100%;
+        justify-content: flex-start;
+    }
+
+    .account-chevron {
+        margin-left: auto;
+    }
+
+    .account-menu {
+        position: static;
+
+        width: 100%;
+        margin-top: 10px;
+
+        display: none;
+
+        box-shadow: none;
+        transform: none;
+    }
+
+    .account-dropdown.open .account-menu {
+        display: block;
+
+        animation: nav-slide-in 0.25s ease;
+    }
+
+}
+
+
+/* Mobile Menu Entrance Animation */
+
+@keyframes nav-slide-in {
+
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+}
+
+
+/* ==========================================
+   ACCESSIBILITY
+========================================== */
+
+.cleanride-navbar a:focus-visible,
+.cleanride-navbar button:focus-visible {
+    outline: 3px solid #0891b2;
+    outline-offset: 4px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+
+    .site-header,
+    .site-header * {
+        transition: none !important;
+        animation: none !important;
+    }
+
+}
+
+
+/* Keep anchor links below sticky navigation */
+
+html {
+    scroll-padding-top: 100px;
+}
 

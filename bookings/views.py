@@ -115,7 +115,17 @@ def home(request):
 
 
 def services(request):
-    return render(request, 'services.html')
+    available_services = Service.objects.all().order_by(
+        "price_cents"
+    )
+
+    return render(
+        request,
+        "services.html",
+        {
+            "available_services": available_services
+        }
+    )
 
 
 def about(request):

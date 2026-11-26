@@ -1,85 +1,322 @@
 {% load static %}
+
 <!DOCTYPE html>
-<html lang = "en">
-    <head>
+<html lang="en">
+
+<head>
+
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>CleanRide Car Wash</title>
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
 
-    <link rel="stylesheet" href="{% static 'style.css' %}">
+    <title>
+        {% block title %}CleanRide Car Wash{% endblock %}
+    </title>
+
+    <link rel="stylesheet"
+          href="{% static 'style.css' %}">
+
 </head>
+
 <body>
 
-    <!--- Navigation -->
-    <header>
-        <nav class="navbar">
+    <!-- CleanRide Navigation -->
 
-            <div class="logo">
-              <a href="{% url 'index' %}">CleanRide</a>
+    <header class="site-header" id="site-header">
+
+        <nav class="cleanride-navbar">
+
+            <!-- Brand -->
+
+            <a href="{% url 'index' %}"
+               class="cleanride-brand">
+
+                <span class="brand-name">
+                    Clean<span>Ride</span>
+                </span>
+
+                <span class="brand-subtitle">
+                    CAR WASH
+                </span>
+
+            </a>
+
+
+            <!-- Mobile Menu Button -->
+
+            <button type="button"
+                    class="mobile-menu-toggle"
+                    id="mobile-menu-toggle"
+                    aria-label="Toggle navigation"
+                    aria-expanded="false"
+                    aria-controls="navigation-menu">
+
+                <span></span>
+                <span></span>
+                <span></span>
+
+            </button>
+
+
+            <!-- Navigation Menu -->
+
+            <div class="navigation-menu"
+                 id="navigation-menu">
+
+                <!-- Main Navigation -->
+
+                <ul class="main-nav-links">
+
+                    <li>
+
+                        <a href="{% url 'index' %}"
+                           class="main-nav-link
+                           {% if request.resolver_match.url_name == 'index' %}active{% endif %}">
+
+                            Home
+
+                        </a>
+
+                    </li>
+
+                    <li>
+
+                        <a href="{% url 'services' %}"
+                           class="main-nav-link
+                           {% if request.resolver_match.url_name == 'services' %}active{% endif %}">
+
+                            Services
+
+                        </a>
+
+                    </li>
+
+                    <li>
+
+                        <a href="{% url 'about' %}"
+                           class="main-nav-link
+                           {% if request.resolver_match.url_name == 'about' %}active{% endif %}">
+
+                            About
+
+                        </a>
+
+                    </li>
+
+                </ul>
+
+
+                <!-- Navigation Actions -->
+
+                <div class="navigation-actions">
+
+                    <a href="{% url 'booking' %}"
+                       class="nav-book-button">
+
+                        Book Now
+
+                        <span class="nav-book-arrow">
+                            &rarr;
+                        </span>
+
+                    </a>
+
+
+                    {% if user.is_authenticated %}
+
+                        <!-- Account Dropdown -->
+
+                        <div class="account-dropdown"
+                             id="account-dropdown">
+
+                            <button type="button"
+                                    class="account-toggle"
+                                    id="account-toggle"
+                                    aria-expanded="false"
+                                    aria-controls="account-menu">
+
+                                <span class="account-avatar">
+
+                                    {{ user.first_name|default:user.email|first|upper }}
+
+                                </span>
+
+                                <span>My Account</span>
+
+                                <svg class="account-chevron"
+                                     width="16"
+                                     height="16"
+                                     viewBox="0 0 24 24"
+                                     fill="none"
+                                     stroke="currentColor"
+                                     stroke-width="2"
+                                     aria-hidden="true">
+
+                                    <path d="m6 9 6 6 6-6"/>
+
+                                </svg>
+
+                            </button>
+
+
+                            <div class="account-menu"
+                                 id="account-menu"
+                                 inert>
+
+                                <!-- Account Information -->
+
+                                <div class="account-menu-header">
+
+                                    <strong>
+
+                                        {% if user.first_name %}
+
+                                            {{ user.first_name }}
+                                            {{ user.last_name }}
+
+                                        {% else %}
+
+                                            My Account
+
+                                        {% endif %}
+
+                                    </strong>
+
+                                    <small>{{ user.email }}</small>
+
+                                </div>
+
+
+                                <!-- Customer Links -->
+
+                                <a href="{% url 'my_appointments' %}"
+                                   class="account-menu-link">
+
+                                    My Appointments
+
+                                </a>
+
+                                <a href="{% url 'my_vehicles' %}"
+                                   class="account-menu-link">
+
+                                    My Vehicles
+
+                                </a>
+
+
+                                <!-- Manager Permission -->
+
+                                {% if perms.bookings.view_appointment %}
+
+                                    <div class="account-divider"></div>
+
+                                    <span class="account-menu-label">
+
+                                        ADMINISTRATION
+
+                                    </span>
+
+                                    <a href="{% url 'manager_dashboard' %}"
+                                       class="account-menu-link manager-menu-link">
+
+                                        Manager Dashboard
+
+                                    </a>
+
+                                {% endif %}
+
+
+                                <!-- Logout -->
+
+                                <div class="account-divider"></div>
+
+                                <form method="POST"
+                                      action="{% url 'logout' %}"
+                                      class="account-logout-form">
+
+                                    {% csrf_token %}
+
+                                    <button type="submit"
+                                            class="account-logout-button">
+
+                                        Logout
+
+                                    </button>
+
+                                </form>
+
+                            </div>
+
+                        </div>
+
+                    {% else %}
+
+                        <!-- Guest Navigation -->
+
+                        <a href="{% url 'login' %}"
+                           class="nav-login-button">
+
+                            Login
+
+                        </a>
+
+                    {% endif %}
+
+                </div>
+
             </div>
-
-            <ul class="nav-links">
-                <li><a href="{% url 'index' %}">Home</a></li>
-                <li><a href="{% url 'services' %}">Services</a></li>
-                <li><a href="{% url 'booking' %}">Book Appointment</a></li>
-                <li><a href="{% url 'about' %}">About</a></li>
-                <li><a href="{% url 'my_appointments' %}">My Appointments</a></li>
-                {% if user.is_authenticated %}
-                <li><form method="post" action="{% url 'logout' %}" class="nav-logout">{% csrf_token %}<button type="submit">Logout</button></form></li>
-                {% else %}
-                <li><a href="{% url 'login' %}">Login</a></li>
-                {% endif %}
-                {% if user.is_authenticated %}
-    <a href="{% url 'my_vehicles' %}">
-        My Vehicles
-    </a>
-{% endif %}
-{% if perms.bookings.view_appointment %}
-
-    <a href="{% url 'manager_dashboard' %}">
-        Manager Dashboard
-    </a>
-
-{% endif %}
-            </ul>
 
         </nav>
+
     </header>
 
-     {% if messages %}
+
+    <!-- Django Messages -->
+
+    {% if messages %}
+
         <div class="site-messages" role="status">
-          {% for message in messages %}
-            <p class="site-message{% if message.tags %} {{ message.tags }}{% endif %}">{{ message }}</p>
-          {% endfor %}
+
+            {% for message in messages %}
+
+                <p class="site-message{% if message.tags %} {{ message.tags }}{% endif %}">
+
+                    {{ message }}
+
+                </p>
+
+            {% endfor %}
+
         </div>
-     {% endif %}
-     {% if messages %}
 
-    <div class="django-messages">
+    {% endif %}
 
-        {% for message in messages %}
 
-            <div class="django-message {{ message.tags }}">
-                {{ message }}
-            </div>
+    <!-- Page Content -->
 
-        {% endfor %}
+    {% block content %}
+    {% endblock %}
 
-    </div>
 
-{% endif %}
+    <!-- Footer -->
 
-     {% block content %}
-     {% endblock %}
-
-     <footer>
+    <footer>
 
         <p>
-            &copy; 2026 CleanRide Car Wash. All rights reserved.
+            &copy; {% now "Y" %} CleanRide Car Wash.
+            All rights reserved.
         </p>
 
     </footer>
+
+
+    <!-- Navigation JavaScript -->
+
+    <script src="{% static 'js/navigation.js' %}" defer></script>
+
+    {% block scripts %}
+    {% endblock %}
 
 </body>
 
