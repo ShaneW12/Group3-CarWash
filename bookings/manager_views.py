@@ -19,6 +19,7 @@ from django.views.decorators.http import require_GET
 from services.models import Service
 from .scheduling import get_available_slots
 from django.db.models import Q
+from django.core.paginator import Paginator
 
 def get_manager_appointment(appointment_id):
 
@@ -95,38 +96,49 @@ def manager_dashboard(request):
 
     appointments = appointments.order_by(
         "appointment_date",
-        "appointment_time"
+        "appointment_time",
+        "pk"
     )
+    filtered_count = appointments.count()
+
+# Display 10 appointments per page
+    paginator = Paginator(appointments, 10)
+
+    page_number = request.GET.get("page")
+
+    page_obj = paginator.get_page(page_number)
 
     context = {
-        "appointments": appointments,
+    "appointments": page_obj,
 
-        "total_appointments":
-            all_appointments.count(),
+    "page_obj": page_obj,
 
-        "scheduled_appointments":
-            all_appointments.filter(
-                status="Scheduled"
-            ).count(),
+    "total_appointments":
+        all_appointments.count(),
 
-        "completed_appointments":
-            all_appointments.filter(
-                status="Completed"
-            ).count(),
+    "scheduled_appointments":
+        all_appointments.filter(
+            status="Scheduled"
+        ).count(),
 
-        "cancelled_appointments":
-            all_appointments.filter(
-                status="Cancelled"
-            ).count(),
+    "completed_appointments":
+        all_appointments.filter(
+            status="Completed"
+        ).count(),
 
-        "filtered_count": appointments.count(),
+    "cancelled_appointments":
+        all_appointments.filter(
+            status="Cancelled"
+        ).count(),
 
-        "search_query": search_query,
+    "filtered_count": filtered_count,
 
-        "selected_status": selected_status,
+    "search_query": search_query,
 
-        "selected_date": selected_date,
-    }
+    "selected_status": selected_status,
+
+    "selected_date": selected_date,
+}
 
     return render(
         request,

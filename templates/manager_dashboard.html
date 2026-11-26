@@ -1,288 +1,500 @@
-{% extends 'base.html' %}
+{% extends 'manager_base.html' %}
+
+{% block title %}Dashboard{% endblock %}
 
 {% block content %}
 
-<main class="booking-page">
-    <section class="booking-container">
+<!-- Page Heading -->
+
+<div class="dashboard-heading">
+
+    <div>
+
+        <p class="dashboard-eyebrow">
+            MANAGEMENT / OVERVIEW
+        </p>
 
         <h1>Manager Dashboard</h1>
 
-        <p>Manage CleanRide customer appointments.</p>
-
-        <!-- Dashboard Statistics -->
-
-        <div class="form-section">
-            <h2>Appointment Overview</h2>
-
-            <p>
-                <strong>Total Appointments:</strong>
-                {{ total_appointments }}
-            </p>
-
-            <p>
-                <strong>Scheduled:</strong>
-                {{ scheduled_appointments }}
-            </p>
-
-            <p>
-                <strong>Completed:</strong>
-                {{ completed_appointments }}
-            </p>
-
-            <p>
-                <strong>Cancelled:</strong>
-                {{ cancelled_appointments }}
-            </p>
-        </div>
-
-        <!-- All Customer Appointments -->
-
-        <h2>Customer Appointments</h2>
-
-                        <div class="form-section">
-                        
-                    <form method="GET"
-                          action="{% url 'manager_dashboard' %}"
-                          class="manager-filter-form">
-                        
-                        <div class="manager-filter-group">
-                        
-                            <label for="manager-search">
-                                Search Appointments
-                            </label>
-                        
-                            <input type="search"
-                                   id="manager-search"
-                                   name="q"
-                                   value="{{ search_query }}"
-                                   placeholder="Name, email, vehicle or service">
-                        
-                        </div>
-                    
-                        <div class="manager-filter-group">
-                        
-                            <label for="manager-status">
-                                Appointment Status
-                            </label>
-                        
-                            <select name="status"
-                                    id="manager-status">
-                        
-                                <option value="">All Statuses</option>
-                        
-                                <option value="Scheduled"
-                                    {% if selected_status == 'Scheduled' %}
-                                        selected
-                                    {% endif %}>
-                                    Scheduled
-                                </option>
-                            
-                                <option value="Completed"
-                                    {% if selected_status == 'Completed' %}
-                                        selected
-                                    {% endif %}>
-                                    Completed
-                                </option>
-                            
-                                <option value="Cancelled"
-                                    {% if selected_status == 'Cancelled' %}
-                                        selected
-                                    {% endif %}>
-                                    Cancelled
-                                </option>
-                            
-                            </select>
-                        
-                        </div>
-                    
-                        <div class="manager-filter-group">
-                        
-                            <label for="manager-date">
-                                Appointment Date
-                            </label>
-                        
-                            <input type="date"
-                                   id="manager-date"
-                                   name="date"
-                                   value="{{ selected_date }}">
-                        
-                        </div>
-                    
-                        <div class="manager-actions">
-                        
-                            <button type="submit"
-                                    class="manager-btn edit-btn">
-                        
-                                Apply Filters
-                        
-                            </button>
-                        
-                            <a href="{% url 'manager_dashboard' %}"
-                               class="manager-btn back-btn">
-                        
-                                Clear Filters
-                        
-                            </a>
-                        
-                        </div>
-                    
-                    </form>
-                
-                </div>
-
-                <p class="manager-results-count">
-                
-                    Showing {{ filtered_count }}
-                    of {{ total_appointments }} appointments.
-                
-                </p>
-
-        {% for appointment in appointments %}
-
-        <div class="form-section">
-
-            <h3>{{ appointment.customer_name }}</h3>
-
-            <p>
-                <strong>Email:</strong>
-                {{ appointment.email }}
-            </p>
-
-            <p>
-                <strong>Phone:</strong>
-                {{ appointment.phone }}
-            </p>
-
-            <p>
-                <strong>Vehicle:</strong>
-                {{ appointment.vehicle_year }}
-                {{ appointment.vehicle_make }}
-                {{ appointment.vehicle_model }}
-            </p>
-
-            <p>
-                <strong>Service:</strong>
-                {{ appointment.service }}
-            </p>
-
-            <p>
-                <strong>Price:</strong>
-                ${{ appointment.total_price_dollars|floatformat:2 }}
-            </p>
-
-            <p>
-                <strong>Duration:</strong>
-                {{ appointment.total_duration_minutes }} minutes
-            </p>
-
-            <p>
-                <strong>Date:</strong>
-                {{ appointment.appointment_date }}
-            </p>
-
-            <p>
-                <strong>Time:</strong>
-                {{ appointment.appointment_time }}
-            </p>
-
-            <p>
-                <strong>Status:</strong>
-                {{ appointment.status }}
-            </p>
-
-        </div>
-        <div class="manager-actions">
-
-    {% if perms.bookings.change_appointment %}
-
-        {% if appointment.status == 'Scheduled' %}
-
-            <!-- Complete Appointment -->
-             <a href="{% url 'manager_edit_appointment' appointment.id %}"
-   class="manager-btn edit-btn">
-
-    Edit Appointment
-
-</a>
-
-            <form method="POST"
-                  action="{% url 'manager_complete_appointment' appointment.id %}">
-
-                {% csrf_token %}
-
-                <button type="submit"
-                        class="manager-btn complete-btn"
-                        onclick="return confirm('Mark this appointment as completed?');">
-
-                    Mark Completed
-
-                </button>
-
-            </form>
-
-            <!-- Cancel Appointment -->
-
-            <form method="POST"
-                  action="{% url 'manager_cancel_appointment' appointment.id %}">
-
-                {% csrf_token %}
-
-                <button type="submit"
-                        class="manager-btn cancel-btn"
-                        onclick="return confirm('Cancel this appointment?');">
-
-                    Cancel Appointment
-
-                </button>
-
-            </form>
-
-        {% endif %}
-
-    {% endif %}
-
-    <!-- Delete Appointment -->
-
-    {% if perms.bookings.delete_appointment %}
-
-        <form method="POST"
-              action="{% url 'manager_delete_appointment' appointment.id %}">
-
-            {% csrf_token %}
-
-            <button type="submit"
-                    class="manager-btn delete-btn"
-                    onclick="return confirm('Permanently delete this appointment? This cannot be undone.');">
-
-                Delete Appointment
-
-            </button>
-
-        </form>
-
-    {% endif %}
-
-</div>
-
-        {% empty %}
-
-        <div class="form-section">
-
-        <h3>No appointments found</h3>
-
-        <p>
-            Try changing your search or filter options.
+        <p class="dashboard-subtitle">
+            Monitor and manage CleanRide customer appointments.
         </p>
-
-        <a href="{% url 'manager_dashboard' %}">
-            View all appointments
-        </a>
 
     </div>
 
-        {% endfor %}
+    <a href="{% url 'manager_dashboard' %}"
+       class="manager-btn secondary-btn">
 
-    </section>
-</main>
+        Refresh Dashboard
+
+    </a>
+
+</div>
+
+
+<!-- Statistics -->
+
+<div class="dashboard-stats">
+
+    <div class="stat-card total-card">
+
+        <div class="stat-top">
+
+            <span>Total Appointments</span>
+
+            <span class="stat-indicator"></span>
+
+        </div>
+
+        <strong>{{ total_appointments }}</strong>
+
+        <small>All customer bookings</small>
+
+    </div>
+
+
+    <div class="stat-card scheduled-card">
+
+        <div class="stat-top">
+
+            <span>Scheduled</span>
+
+            <span class="stat-indicator"></span>
+
+        </div>
+
+        <strong>{{ scheduled_appointments }}</strong>
+
+        <small>Appointments awaiting service</small>
+
+    </div>
+
+
+    <div class="stat-card completed-card">
+
+        <div class="stat-top">
+
+            <span>Completed</span>
+
+            <span class="stat-indicator"></span>
+
+        </div>
+
+        <strong>{{ completed_appointments }}</strong>
+
+        <small>Successfully serviced</small>
+
+    </div>
+
+
+    <div class="stat-card cancelled-card">
+
+        <div class="stat-top">
+
+            <span>Cancelled</span>
+
+            <span class="stat-indicator"></span>
+
+        </div>
+
+        <strong>{{ cancelled_appointments }}</strong>
+
+        <small>Cancelled bookings</small>
+
+    </div>
+
+</div>
+
+
+<!-- Appointments Section -->
+
+<section class="dashboard-panel" id="appointments">
+
+    <div class="panel-heading">
+
+        <div>
+
+            <h2>Customer Appointments</h2>
+
+            <p>
+                View, update and manage customer bookings.
+            </p>
+
+        </div>
+
+        <span class="record-count">
+
+            {{ filtered_count }} records
+
+        </span>
+
+    </div>
+
+
+    <!-- Search and Filters -->
+
+    <form method="GET"
+          action="{% url 'manager_dashboard' %}"
+          class="manager-filter-form">
+
+        <div class="manager-filter-group">
+
+            <label for="manager-search">
+                Search
+            </label>
+
+            <input type="search"
+                   id="manager-search"
+                   name="q"
+                   value="{{ search_query }}"
+                   placeholder="Customer, email, vehicle, service...">
+
+        </div>
+
+
+        <div class="manager-filter-group">
+
+            <label for="manager-status">
+                Status
+            </label>
+
+            <select name="status" id="manager-status">
+
+                <option value="">All Statuses</option>
+
+                <option value="Scheduled"
+                    {% if selected_status == 'Scheduled' %}
+                        selected
+                    {% endif %}>
+                    Scheduled
+                </option>
+
+                <option value="Completed"
+                    {% if selected_status == 'Completed' %}
+                        selected
+                    {% endif %}>
+                    Completed
+                </option>
+
+                <option value="Cancelled"
+                    {% if selected_status == 'Cancelled' %}
+                        selected
+                    {% endif %}>
+                    Cancelled
+                </option>
+
+            </select>
+
+        </div>
+
+
+        <div class="manager-filter-group">
+
+            <label for="manager-date">
+                Appointment Date
+            </label>
+
+            <input type="date"
+                   id="manager-date"
+                   name="date"
+                   value="{{ selected_date }}">
+
+        </div>
+
+
+        <div class="filter-buttons">
+
+            <button type="submit"
+                    class="manager-btn primary-btn">
+
+                Apply Filters
+
+            </button>
+
+            <a href="{% url 'manager_dashboard' %}"
+               class="manager-btn secondary-btn">
+
+                Clear
+
+            </a>
+
+        </div>
+
+    </form>
+
+
+    <!-- Appointment Table -->
+
+    <div class="manager-table-wrapper">
+
+        <table class="manager-table">
+
+            <thead>
+
+                <tr>
+                    <th>Customer</th>
+                    <th>Vehicle</th>
+                    <th>Services</th>
+                    <th>Schedule</th>
+                    <th>Price</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+
+            </thead>
+
+            <tbody>
+
+                {% for appointment in appointments %}
+
+                <tr>
+
+                    <!-- Customer -->
+
+                    <td>
+
+                        <strong class="customer-name">
+                            {{ appointment.customer_name }}
+                        </strong>
+
+                        <span class="table-secondary">
+                            {{ appointment.email }}
+                        </span>
+
+                        <span class="table-secondary">
+                            {{ appointment.phone }}
+                        </span>
+
+                    </td>
+
+
+                    <!-- Vehicle -->
+
+                    <td>
+
+                        <strong>
+                            {{ appointment.vehicle_year }}
+                            {{ appointment.vehicle_make }}
+                        </strong>
+
+                        <span class="table-secondary">
+                            {{ appointment.vehicle_model }}
+                        </span>
+
+                        <span class="table-secondary">
+                            {{ appointment.vehicle_type|title }}
+                        </span>
+
+                    </td>
+
+
+                    <!-- Services -->
+
+                    <td class="service-column">
+
+                        {{ appointment.service }}
+
+                        <span class="table-secondary">
+
+                            {{ appointment.total_duration_minutes }}
+                            minutes
+
+                        </span>
+
+                    </td>
+
+
+                    <!-- Schedule -->
+
+                    <td class="schedule-column">
+
+                        <strong>
+                            {{ appointment.appointment_date|date:"M d, Y" }}
+                        </strong>
+
+                        <span class="table-secondary">
+                            {{ appointment.appointment_time|time:"g:i A" }}
+                        </span>
+
+                    </td>
+
+
+                    <!-- Price -->
+
+                    <td class="price-column">
+
+                        ${{ appointment.total_price_dollars|floatformat:2 }}
+
+                    </td>
+
+
+                    <!-- Status -->
+
+                    <td>
+
+                        <span class="appointment-status status-{{ appointment.status|lower }}">
+
+                            {{ appointment.status }}
+
+                        </span>
+
+                    </td>
+
+
+                    <!-- Manager Actions -->
+
+                    <td>
+
+                        <div class="table-actions">
+
+                            {% if perms.bookings.change_appointment %}
+
+                                {% if appointment.status == 'Scheduled' %}
+
+                                    <a href="{% url 'manager_edit_appointment' appointment.id %}"
+                                       class="action-btn action-edit">
+
+                                        Edit
+
+                                    </a>
+
+
+                                    <form method="POST"
+                                          action="{% url 'manager_complete_appointment' appointment.id %}">
+
+                                        {% csrf_token %}
+
+                                        <button type="submit"
+                                                class="action-btn action-complete"
+                                                onclick="return confirm('Mark this appointment as completed?');">
+
+                                            Complete
+
+                                        </button>
+
+                                    </form>
+
+
+                                    <form method="POST"
+                                          action="{% url 'manager_cancel_appointment' appointment.id %}">
+
+                                        {% csrf_token %}
+
+                                        <button type="submit"
+                                                class="action-btn action-cancel"
+                                                onclick="return confirm('Cancel this appointment?');">
+
+                                            Cancel
+
+                                        </button>
+
+                                    </form>
+
+                                {% endif %}
+
+                            {% endif %}
+
+
+                            {% if perms.bookings.delete_appointment %}
+
+                                <form method="POST"
+                                      action="{% url 'manager_delete_appointment' appointment.id %}">
+
+                                    {% csrf_token %}
+
+                                    <button type="submit"
+                                            class="action-btn action-delete"
+                                            onclick="return confirm('Permanently delete this appointment? This cannot be undone.');">
+
+                                        Delete
+
+                                    </button>
+
+                                </form>
+
+                            {% endif %}
+
+                        </div>
+
+                    </td>
+
+                </tr>
+
+                {% empty %}
+
+                <tr>
+
+                    <td colspan="7" class="empty-state">
+
+                        <h3>No appointments found</h3>
+
+                        <p>Try changing your search or filters.</p>
+
+                        <a href="{% url 'manager_dashboard' %}"
+                           class="manager-btn primary-btn">
+
+                            View All Appointments
+
+                        </a>
+
+                    </td>
+
+                </tr>
+
+                {% endfor %}
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+
+    <!-- Pagination -->
+
+    <div class="table-footer">
+
+        <p>
+
+            Showing {{ page_obj.start_index }}
+            – {{ page_obj.end_index }}
+            of {{ filtered_count }} appointments
+
+        </p>
+
+        {% if page_obj.has_other_pages %}
+
+            <div class="pagination">
+
+                {% if page_obj.has_previous %}
+
+                    <a href="{% querystring page=page_obj.previous_page_number %}">
+                        Previous
+                    </a>
+
+                {% endif %}
+
+                <span class="current-page">
+
+                    Page {{ page_obj.number }}
+                    of {{ page_obj.paginator.num_pages }}
+
+                </span>
+
+                {% if page_obj.has_next %}
+
+                    <a href="{% querystring page=page_obj.next_page_number %}">
+                        Next
+                    </a>
+
+                {% endif %}
+
+            </div>
+
+        {% endif %}
+
+    </div>
+
+</section>
 
 {% endblock %}

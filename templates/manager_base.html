@@ -1,0 +1,158 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>
+        {% block title %}Manager Dashboard{% endblock %}
+        | CleanRide
+    </title>
+
+    <link rel="stylesheet"
+          href="{% static 'manager.css' %}">
+
+</head>
+
+<body>
+
+<div class="manager-layout">
+
+    <!-- Sidebar -->
+
+    <aside class="manager-sidebar">
+
+        <a href="{% url 'manager_dashboard' %}"
+           class="manager-brand">
+
+            Clean<span>Ride</span>
+
+        </a>
+
+        <p class="manager-portal-label">
+            MANAGER PORTAL
+        </p>
+
+        <nav class="manager-nav">
+
+            <p class="nav-heading">WORKSPACE</p>
+
+            <a href="{% url 'manager_dashboard' %}"
+               class="{% if request.resolver_match.url_name == 'manager_dashboard' %}active{% endif %}">
+
+                Dashboard
+
+            </a>
+
+            <a href="{% url 'manager_dashboard' %}#appointments">
+                Appointments
+            </a>
+
+            <p class="nav-heading">NAVIGATION</p>
+
+            <a href="{% url 'index' %}">
+                View Website
+            </a>
+
+            <a href="{% url 'my_appointments' %}">
+                My Appointments
+            </a>
+
+            <a href="{% url 'booking' %}">
+                Book a Service
+            </a>
+
+        </nav>
+
+        <div class="sidebar-bottom">
+
+            <form method="POST" action="{% url 'logout' %}">
+
+                {% csrf_token %}
+
+                <button type="submit"
+                        class="sidebar-logout">
+
+                    Logout
+
+                </button>
+
+            </form>
+
+        </div>
+
+    </aside>
+
+    <!-- Main Content -->
+
+    <div class="manager-main">
+
+        <header class="manager-header">
+
+            <div>
+                <span class="header-label">
+                    CleanRide Administration
+                </span>
+            </div>
+
+            <div class="manager-profile">
+
+                <div class="manager-avatar">
+                    {{ request.user.email|first|upper }}
+                </div>
+
+                <div>
+
+                    <strong>
+                        {{ request.user.first_name }}
+                        {{ request.user.last_name }}
+                    </strong>
+
+                    <small>{{ request.user.email }}</small>
+
+                </div>
+
+            </div>
+
+        </header>
+
+        <main class="manager-content">
+
+            {% if messages %}
+
+                {% for message in messages %}
+
+                    <div class="manager-message {{ message.tags }}">
+                        {{ message }}
+                    </div>
+
+                {% endfor %}
+
+            {% endif %}
+
+            {% block content %}
+            {% endblock %}
+
+        </main>
+
+        <footer class="manager-footer">
+
+            &copy; {% now "Y" %} CleanRide.
+            Manager Administration Portal.
+
+        </footer>
+
+    </div>
+
+</div>
+
+{% block scripts %}
+{% endblock %}
+
+</body>
+</html>
