@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-
+{% load static %}
 {% block content %}
 
 <main class="booking-page">
@@ -13,7 +13,7 @@
             and scheduling information.
         </p>
 
-        <form method="POST" class="manager-edit-form">
+        <form method="POST" class="manager-edit-form" id="manager-edit-form" data-slots-url="{% url 'manager_available_slots' appointment.id %}">
 
             {% csrf_token %}
 
@@ -83,45 +83,64 @@
 
                 <h2>Appointment Scheduling</h2>
 
-                <label>Appointment Date</label>
+                <label for = "id_appointment_date">Appointment Date</label>
                 {{ form.appointment_date }}
                 {{ form.appointment_date.errors }}
 
-                <label>Appointment Time</label>
+                <label for = id_appointment_time>Appointment Time</label>
                 {{ form.appointment_time }}
                 {{ form.appointment_time.errors }}
+                <p id="manager-availability-message"
+                   class="manager-availability-message"
+                   role="status">
+              </p>
 
             </div>
 
             <!-- Existing Appointment Summary -->
 
-            <div class="form-section">
+            <div class="form-section manager-summary">
 
-                <h2>Saved Appointment Summary</h2>
+                <h2>Appointment Summary</h2>
+
+                <div class="manager-summary-grid">
+
+                    <div class="manager-summary-item">
+
+                        <span>Total Price</span>
+
+                        <strong id="manager-total-price">
+                            ${{ appointment.total_price_dollars|floatformat:2 }}
+                        </strong>
+
+                    </div>
+
+                    <div class="manager-summary-item">
+
+                        <span>Total Duration</span>
+
+                        <strong id="manager-total-duration">
+                            {{ appointment.total_duration_minutes }} minutes
+                        </strong>
+
+                    </div>
+
+                </div>
 
                 <p>
-                    <strong>Current Price:</strong>
-                    ${{ appointment.total_price_dollars|floatformat:2 }}
+                    Price and duration automatically update
+                    when selected services change.
                 </p>
 
-                <p>
-                    <strong>Current Duration:</strong>
-                    {{ appointment.total_duration_minutes }} minutes
-                </p>
-
-                <p>
-                    Price and duration will be recalculated
-                    if selected services change.
-                </p>
-
-            </div>
+</div>
 
             <!-- Form Actions -->
 
             <div class="manager-actions">
 
                 <button type="submit"
-                        class="manager-btn edit-btn">
+                        class="manager-btn edit-btn"
+                        id="manager-save-btn">
 
                     Save Changes
 
@@ -141,5 +160,5 @@
     </section>
 
 </main>
-
+<script src="{% static 'js/manager.js' %}" defer></script>
 {% endblock %}

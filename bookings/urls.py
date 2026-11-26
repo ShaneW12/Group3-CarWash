@@ -79,4 +79,9 @@ path(
     manager_views.manager_edit_appointment,
     name="manager_edit_appointment"
 ),
+path(
+    "api/manager/appointments/<str:appointment_id>/available-slots/",
+    manager_views.manager_available_slots,
+    name="manager_available_slots"
+),
 ]

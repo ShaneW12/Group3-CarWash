@@ -12,6 +12,13 @@ from django.http import Http404
 from .models import Appointment
 from .forms import ManagerAppointmentForm
 from django.views.decorators.http import require_http_methods
+from django.http import JsonResponse
+from django.utils.dateparse import parse_date
+from django.views.decorators.http import require_GET
+
+from services.models import Service
+from .scheduling import get_available_slots
+from django.db.models import Q
 
 def get_manager_appointment(appointment_id):
 
@@ -31,7 +38,62 @@ def get_manager_appointment(appointment_id):
 )
 def manager_dashboard(request):
 
-    appointments = Appointment.objects.all().order_by(
+    all_appointments = Appointment.objects.all()
+
+    appointments = all_appointments
+
+    # Retrieve search and filter values.
+    search_query = request.GET.get("q", "").strip()
+    selected_status = request.GET.get("status", "").strip()
+    selected_date = request.GET.get("date", "").strip()
+
+    # Search customer and vehicle information.
+    if search_query:
+
+        appointments = appointments.filter(
+
+            Q(customer_name__icontains=search_query)
+            | Q(email__icontains=search_query)
+            | Q(phone__icontains=search_query)
+            | Q(vehicle_make__icontains=search_query)
+            | Q(vehicle_model__icontains=search_query)
+            | Q(service__icontains=search_query)
+
+        )
+
+    # Filter by appointment status.
+    if selected_status in [
+        "Scheduled",
+        "Completed",
+        "Cancelled",
+    ]:
+
+        appointments = appointments.filter(
+            status=selected_status
+        )
+
+    # Filter by appointment date.
+    if selected_date:
+
+        try:
+            parsed_date = parse_date(selected_date)
+        except ValueError:
+            parsed_date = None
+
+        if parsed_date:
+
+            appointments = appointments.filter(
+                appointment_date=parsed_date
+            )
+
+        else:
+
+            messages.error(
+                request,
+                "Please enter a valid appointment date."
+            )
+
+    appointments = appointments.order_by(
         "appointment_date",
         "appointment_time"
     )
@@ -39,19 +101,31 @@ def manager_dashboard(request):
     context = {
         "appointments": appointments,
 
-        "total_appointments": appointments.count(),
+        "total_appointments":
+            all_appointments.count(),
 
-        "scheduled_appointments": appointments.filter(
-            status="Scheduled"
-        ).count(),
+        "scheduled_appointments":
+            all_appointments.filter(
+                status="Scheduled"
+            ).count(),
 
-        "completed_appointments": appointments.filter(
-            status="Completed"
-        ).count(),
+        "completed_appointments":
+            all_appointments.filter(
+                status="Completed"
+            ).count(),
 
-        "cancelled_appointments": appointments.filter(
-            status="Cancelled"
-        ).count(),
+        "cancelled_appointments":
+            all_appointments.filter(
+                status="Cancelled"
+            ).count(),
+
+        "filtered_count": appointments.count(),
+
+        "search_query": search_query,
+
+        "selected_status": selected_status,
+
+        "selected_date": selected_date,
     }
 
     return render(
@@ -201,3 +275,113 @@ def manager_edit_appointment(request, appointment_id):
             "appointment": appointment,
         }
     )
+@login_required(login_url="login")
+@permission_required(
+    "bookings.change_appointment",
+    raise_exception=True
+)
+@require_GET
+def manager_available_slots(request, appointment_id):
+
+    appointment = get_manager_appointment(
+        appointment_id
+    )
+
+    if appointment.status != "Scheduled":
+        return JsonResponse(
+            {"error": "This appointment cannot be edited."},
+            status=400
+        )
+
+    try:
+        selected_date = parse_date(
+            request.GET.get("date", "")
+        )
+    except ValueError:
+        selected_date = None
+
+    service_codes = request.GET.getlist("service")
+
+    if not selected_date:
+        return JsonResponse(
+            {"error": "Please select a valid date."},
+            status=400
+        )
+
+    if not service_codes:
+        return JsonResponse(
+            {"error": "Please select at least one service."},
+            status=400
+        )
+
+    if len(service_codes) != len(set(service_codes)):
+        return JsonResponse(
+            {"error": "Duplicate services are not allowed."},
+            status=400
+        )
+
+    selected_services = list(
+        Service.objects.filter(code__in=service_codes)
+    )
+
+    if len(selected_services) != len(service_codes):
+        return JsonResponse(
+            {"error": "Invalid service selection."},
+            status=400
+        )
+
+    if len(", ".join(service_codes)) > 100:
+        return JsonResponse(
+            {"error": "Too many services selected."},
+            status=400
+        )
+
+    original_codes = [
+        code.strip()
+        for code in appointment.service.split(",")
+        if code.strip()
+    ]
+
+    services_changed = (
+        set(service_codes) != set(original_codes)
+    )
+
+    # Preserve the original quoted price and duration
+    # if the selected services have not changed.
+    if (
+        services_changed
+        or appointment.total_duration_minutes <= 0
+    ):
+
+        total_price_cents = sum(
+            service.price_cents
+            for service in selected_services
+        )
+
+        total_duration_minutes = sum(
+            service.duration_minutes
+            for service in selected_services
+        )
+
+    else:
+
+        total_price_cents = (
+            appointment.total_price_cents
+        )
+
+        total_duration_minutes = (
+            appointment.total_duration_minutes
+        )
+
+    available_slots = get_available_slots(
+        selected_date,
+        total_duration_minutes,
+        exclude_appointment_id=appointment.pk
+    )
+
+    return JsonResponse({
+        "date": selected_date.isoformat(),
+        "total_price_cents": total_price_cents,
+        "total_duration_minutes": total_duration_minutes,
+        "available_slots": available_slots,
+    })

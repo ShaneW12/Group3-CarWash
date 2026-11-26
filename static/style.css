@@ -1348,4 +1348,103 @@ margin-bottom: 10px;
     margin: 6px 0 12px;
     padding-left: 20px;
 }
+/* ===================================
+   Manager Appointment Summary
+=================================== */
+
+.manager-summary-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 15px;
+    margin: 20px 0;
+}
+
+.manager-summary-item {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 20px;
+    background-color: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+}
+
+.manager-summary-item span {
+    font-size: 14px;
+    color: #64748b;
+}
+
+.manager-summary-item strong {
+    font-size: 26px;
+    color: #2563eb;
+}
+
+.manager-availability-message {
+    margin-top: 10px;
+    font-size: 14px;
+    color: #64748b;
+}
+
+.manager-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+
+/* ===================================
+   Manager Dashboard Filters
+=================================== */
+
+.manager-filter-form {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr;
+    gap: 15px;
+}
+
+.manager-filter-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.manager-filter-group label {
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.manager-filter-group input,
+.manager-filter-group select {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #cbd5e1;
+    border-radius: 6px;
+    box-sizing: border-box;
+    font-size: 14px;
+}
+
+.manager-filter-form .manager-actions {
+    grid-column: 1 / -1;
+    margin-top: 0;
+}
+
+.manager-results-count {
+    color: #64748b;
+    font-size: 14px;
+    margin: 15px 0;
+}
+
+
+/* Responsive Manager Dashboard */
+
+@media (max-width: 768px) {
+
+    .manager-filter-form {
+        grid-template-columns: 1fr;
+    }
+
+    .manager-summary-grid {
+        grid-template-columns: 1fr;
+    }
+
+}
 
