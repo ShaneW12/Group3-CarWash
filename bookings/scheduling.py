@@ -183,7 +183,8 @@ def is_slot_available(
 
 def get_available_slots(
     appointment_date,
-    duration_minutes
+    duration_minutes,
+    exclude_appointment_id=None
 ):
     """
     Return available start times for a given
@@ -222,10 +223,11 @@ def get_available_slots(
     ) <= closing:
 
         if is_slot_available(
-            appointment_date,
-            current_slot.time(),
-            duration_minutes
-        ):
+    appointment_date,
+    current_slot.time(),
+    duration_minutes,
+    exclude_appointment_id=exclude_appointment_id
+):
             available_slots.append(
                 current_slot.strftime("%H:%M")
             )

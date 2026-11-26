@@ -1198,4 +1198,154 @@ margin-bottom: 10px;
 .vehicle-delete-button:hover {
     background-color: #b91c1c;
 }
+/* Manager Dashboard Actions */
+
+.manager-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 20px;
+}
+
+.manager-actions form {
+    margin: 0;
+}
+
+.manager-btn {
+    padding: 10px 16px;
+    border: none;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.complete-btn {
+    background-color: #16a34a;
+    color: white;
+}
+
+.complete-btn:hover {
+    background-color: #15803d;
+}
+
+.cancel-btn {
+    background-color: #f59e0b;
+    color: #1f2937;
+}
+
+.cancel-btn:hover {
+    background-color: #d97706;
+}
+
+.delete-btn {
+    background-color: #dc2626;
+    color: white;
+}
+
+.delete-btn:hover {
+    background-color: #b91c1c;
+}
+
+@media (max-width: 600px) {
+
+    .manager-actions {
+        flex-direction: column;
+    }
+
+    .manager-actions form,
+    .manager-btn {
+        width: 100%;
+    }
+
+}
+.django-messages {
+    max-width: 1000px;
+    margin: 20px auto;
+    padding: 0 15px;
+}
+
+.django-message {
+    padding: 15px;
+    margin-bottom: 10px;
+    border-radius: 6px;
+}
+
+.django-message.success {
+    background-color: #dcfce7;
+    color: #166534;
+}
+
+.django-message.error {
+    background-color: #fee2e2;
+    color: #991b1b;
+}
+/* Manager Edit Appointment */
+
+.edit-btn {
+    background-color: #2563eb;
+    color: white;
+}
+
+.edit-btn:hover {
+    background-color: #1d4ed8;
+}
+
+.back-btn {
+    background-color: #64748b;
+    color: white;
+}
+
+.back-btn:hover {
+    background-color: #475569;
+}
+
+.manager-actions a {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    box-sizing: border-box;
+}
+
+.manager-edit-form label {
+    display: block;
+    margin-top: 12px;
+    margin-bottom: 6px;
+    font-weight: 600;
+}
+
+.manager-edit-form input:not([type="checkbox"]),
+.manager-edit-form select {
+    width: 100%;
+    padding: 12px;
+    margin-bottom: 12px;
+    border: 1px solid #cbd5e1;
+    border-radius: 6px;
+    box-sizing: border-box;
+}
+
+.manager-service-options label {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px;
+    border: 1px solid #cbd5e1;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.manager-service-options input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    accent-color: #2563eb;
+}
+
+.manager-edit-form .errorlist {
+    color: #dc2626;
+    font-size: 14px;
+    margin: 6px 0 12px;
+    padding-left: 20px;
+}
 

@@ -1,0 +1,178 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<main class="booking-page">
+    <section class="booking-container">
+
+        <h1>Manager Dashboard</h1>
+
+        <p>Manage CleanRide customer appointments.</p>
+
+        <!-- Dashboard Statistics -->
+
+        <div class="form-section">
+            <h2>Appointment Overview</h2>
+
+            <p>
+                <strong>Total Appointments:</strong>
+                {{ total_appointments }}
+            </p>
+
+            <p>
+                <strong>Scheduled:</strong>
+                {{ scheduled_appointments }}
+            </p>
+
+            <p>
+                <strong>Completed:</strong>
+                {{ completed_appointments }}
+            </p>
+
+            <p>
+                <strong>Cancelled:</strong>
+                {{ cancelled_appointments }}
+            </p>
+        </div>
+
+        <!-- All Customer Appointments -->
+
+        <h2>Customer Appointments</h2>
+
+        {% for appointment in appointments %}
+
+        <div class="form-section">
+
+            <h3>{{ appointment.customer_name }}</h3>
+
+            <p>
+                <strong>Email:</strong>
+                {{ appointment.email }}
+            </p>
+
+            <p>
+                <strong>Phone:</strong>
+                {{ appointment.phone }}
+            </p>
+
+            <p>
+                <strong>Vehicle:</strong>
+                {{ appointment.vehicle_year }}
+                {{ appointment.vehicle_make }}
+                {{ appointment.vehicle_model }}
+            </p>
+
+            <p>
+                <strong>Service:</strong>
+                {{ appointment.service }}
+            </p>
+
+            <p>
+                <strong>Price:</strong>
+                ${{ appointment.total_price_dollars|floatformat:2 }}
+            </p>
+
+            <p>
+                <strong>Duration:</strong>
+                {{ appointment.total_duration_minutes }} minutes
+            </p>
+
+            <p>
+                <strong>Date:</strong>
+                {{ appointment.appointment_date }}
+            </p>
+
+            <p>
+                <strong>Time:</strong>
+                {{ appointment.appointment_time }}
+            </p>
+
+            <p>
+                <strong>Status:</strong>
+                {{ appointment.status }}
+            </p>
+
+        </div>
+        <div class="manager-actions">
+
+    {% if perms.bookings.change_appointment %}
+
+        {% if appointment.status == 'Scheduled' %}
+
+            <!-- Complete Appointment -->
+             <a href="{% url 'manager_edit_appointment' appointment.id %}"
+   class="manager-btn edit-btn">
+
+    Edit Appointment
+
+</a>
+
+            <form method="POST"
+                  action="{% url 'manager_complete_appointment' appointment.id %}">
+
+                {% csrf_token %}
+
+                <button type="submit"
+                        class="manager-btn complete-btn"
+                        onclick="return confirm('Mark this appointment as completed?');">
+
+                    Mark Completed
+
+                </button>
+
+            </form>
+
+            <!-- Cancel Appointment -->
+
+            <form method="POST"
+                  action="{% url 'manager_cancel_appointment' appointment.id %}">
+
+                {% csrf_token %}
+
+                <button type="submit"
+                        class="manager-btn cancel-btn"
+                        onclick="return confirm('Cancel this appointment?');">
+
+                    Cancel Appointment
+
+                </button>
+
+            </form>
+
+        {% endif %}
+
+    {% endif %}
+
+    <!-- Delete Appointment -->
+
+    {% if perms.bookings.delete_appointment %}
+
+        <form method="POST"
+              action="{% url 'manager_delete_appointment' appointment.id %}">
+
+            {% csrf_token %}
+
+            <button type="submit"
+                    class="manager-btn delete-btn"
+                    onclick="return confirm('Permanently delete this appointment? This cannot be undone.');">
+
+                Delete Appointment
+
+            </button>
+
+        </form>
+
+    {% endif %}
+
+</div>
+
+        {% empty %}
+
+        <p>No customer appointments found.</p>
+
+        {% endfor %}
+
+    </section>
+</main>
+
+{% endblock %}

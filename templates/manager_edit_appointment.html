@@ -1,0 +1,145 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<main class="booking-page">
+
+    <section class="booking-container">
+
+        <h1>Edit Appointment</h1>
+
+        <p>
+            Update customer, vehicle, service,
+            and scheduling information.
+        </p>
+
+        <form method="POST" class="manager-edit-form">
+
+            {% csrf_token %}
+
+            {{ form.non_field_errors }}
+
+            <!-- Customer Information -->
+
+            <div class="form-section">
+
+                <h2>Customer Information</h2>
+
+                <label>Customer Name</label>
+                {{ form.customer_name }}
+                {{ form.customer_name.errors }}
+
+                <label>Email</label>
+                {{ form.email }}
+                {{ form.email.errors }}
+
+                <label>Phone Number</label>
+                {{ form.phone }}
+                {{ form.phone.errors }}
+
+            </div>
+
+            <!-- Vehicle Information -->
+
+            <div class="form-section">
+
+                <h2>Vehicle Information</h2>
+
+                <label>Vehicle Year</label>
+                {{ form.vehicle_year }}
+                {{ form.vehicle_year.errors }}
+
+                <label>Vehicle Make</label>
+                {{ form.vehicle_make }}
+                {{ form.vehicle_make.errors }}
+
+                <label>Vehicle Model</label>
+                {{ form.vehicle_model }}
+                {{ form.vehicle_model.errors }}
+
+                <label>Vehicle Type</label>
+                {{ form.vehicle_type }}
+                {{ form.vehicle_type.errors }}
+
+            </div>
+
+            <!-- Service Selection -->
+
+            <div class="form-section">
+
+                <h2>Selected Services</h2>
+
+                <div class="manager-service-options">
+                    {{ form.selected_services }}
+                </div>
+
+                {{ form.selected_services.errors }}
+
+            </div>
+
+            <!-- Appointment Scheduling -->
+
+            <div class="form-section">
+
+                <h2>Appointment Scheduling</h2>
+
+                <label>Appointment Date</label>
+                {{ form.appointment_date }}
+                {{ form.appointment_date.errors }}
+
+                <label>Appointment Time</label>
+                {{ form.appointment_time }}
+                {{ form.appointment_time.errors }}
+
+            </div>
+
+            <!-- Existing Appointment Summary -->
+
+            <div class="form-section">
+
+                <h2>Saved Appointment Summary</h2>
+
+                <p>
+                    <strong>Current Price:</strong>
+                    ${{ appointment.total_price_dollars|floatformat:2 }}
+                </p>
+
+                <p>
+                    <strong>Current Duration:</strong>
+                    {{ appointment.total_duration_minutes }} minutes
+                </p>
+
+                <p>
+                    Price and duration will be recalculated
+                    if selected services change.
+                </p>
+
+            </div>
+
+            <!-- Form Actions -->
+
+            <div class="manager-actions">
+
+                <button type="submit"
+                        class="manager-btn edit-btn">
+
+                    Save Changes
+
+                </button>
+
+                <a href="{% url 'manager_dashboard' %}"
+                   class="manager-btn back-btn">
+
+                    Back to Dashboard
+
+                </a>
+
+            </div>
+
+        </form>
+
+    </section>
+
+</main>
+
+{% endblock %}

@@ -1,6 +1,7 @@
 
 from django.urls import path
 from . import views
+from . import manager_views
 
 urlpatterns = [
     path("", views.home, name="index"),
@@ -48,5 +49,34 @@ path(
     "api/ai-recommendation/",
     views.ai_booking_recommendation,
     name="ai_booking_recommendation"
+),
+path(
+    "manager/",
+    manager_views.manager_dashboard,
+    name="manager_dashboard"
+),
+# Manager Appointment Management
+
+path(
+    "manager/appointments/<str:appointment_id>/cancel/",
+    manager_views.manager_cancel_appointment,
+    name="manager_cancel_appointment"
+),
+
+path(
+    "manager/appointments/<str:appointment_id>/complete/",
+    manager_views.manager_complete_appointment,
+    name="manager_complete_appointment"
+),
+
+path(
+    "manager/appointments/<str:appointment_id>/delete/",
+    manager_views.manager_delete_appointment,
+    name="manager_delete_appointment"
+),
+path(
+    "manager/appointments/<str:appointment_id>/edit/",
+    manager_views.manager_edit_appointment,
+    name="manager_edit_appointment"
 ),
 ]

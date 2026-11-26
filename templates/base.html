@@ -35,6 +35,13 @@
         My Vehicles
     </a>
 {% endif %}
+{% if perms.bookings.view_appointment %}
+
+    <a href="{% url 'manager_dashboard' %}">
+        Manager Dashboard
+    </a>
+
+{% endif %}
             </ul>
 
         </nav>
@@ -47,6 +54,21 @@
           {% endfor %}
         </div>
      {% endif %}
+     {% if messages %}
+
+    <div class="django-messages">
+
+        {% for message in messages %}
+
+            <div class="django-message {{ message.tags }}">
+                {{ message }}
+            </div>
+
+        {% endfor %}
+
+    </div>
+
+{% endif %}
 
      {% block content %}
      {% endblock %}
