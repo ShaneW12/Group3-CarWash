@@ -1447,4 +1447,633 @@ margin-bottom: 10px;
     }
 
 }
+/* Interactive Homepage Service Cards */
+
+.services-preview .clickable-service {
+    display: block;
+    position: relative;
+    text-decoration: none;
+    color: inherit;
+    cursor: pointer;
+    border: 2px solid transparent;
+
+    transition:
+        transform 0.3s ease,
+        box-shadow 0.3s ease,
+        border-color 0.3s ease;
+}
+
+.services-preview .clickable-service:hover {
+    transform: translateY(-10px);
+    border-color: #00b8ff;
+
+    box-shadow:
+        0 15px 35px rgba(20, 121, 255, 0.18),
+        0 0 20px rgba(0, 184, 255, 0.15);
+}
+
+.clickable-service:active {
+    transform: translateY(-3px) scale(0.98);
+}
+
+.clickable-service:focus-visible {
+    outline: 3px solid #1479ff;
+    outline-offset: 4px;
+}
+
+.service-card-link {
+    display: inline-block;
+    margin-top: 20px;
+    color: #1479ff;
+    font-weight: bold;
+    transition: transform 0.3s ease;
+}
+
+.clickable-service:hover .service-card-link {
+    transform: translateX(5px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .clickable-service,
+    .service-card-link {
+        transition: none !important;
+        transform: none !important;
+    }
+}
+/* ==========================================
+   CLEANRIDE HOMEPAGE REDESIGN
+========================================== */
+
+.cleanride-home {
+    --home-navy: #06182c;
+    --home-cyan: #22d3ee;
+    --home-blue: #1479ff;
+    --home-text: #0f172a;
+    --home-muted: #64748b;
+
+    overflow: hidden;
+}
+
+
+/* Hero Section */
+
+.home-hero {
+    position: relative;
+    display: flex;
+    align-items: center;
+
+    min-height: 650px;
+    padding: 90px 8%;
+
+    background-color: var(--home-navy);
+
+    background-image:
+        linear-gradient(
+            90deg,
+            rgba(6, 24, 44, 0.98) 0%,
+            rgba(6, 24, 44, 0.85) 38%,
+            rgba(6, 24, 44, 0.15) 100%
+        ),
+        url("images/hero-carwash.jpeg");
+
+    background-size: cover;
+    background-position: center right;
+
+    isolation: isolate;
+}
+
+.home-hero-content {
+    position: relative;
+    z-index: 2;
+    max-width: 720px;
+    color: white;
+}
+
+.home-eyebrow {
+    display: inline-block;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 3px;
+    color: #0284c7;
+    margin-bottom: 16px;
+}
+
+.home-hero .home-eyebrow {
+    color: var(--home-cyan);
+}
+
+.home-hero h1 {
+    font-size: clamp(42px, 5vw, 76px);
+    line-height: 1.08;
+    letter-spacing: -2px;
+    margin-bottom: 25px;
+}
+
+.home-hero h1 span {
+    color: var(--home-cyan);
+}
+
+.home-hero-content > p {
+    max-width: 550px;
+    color: #cbd5e1;
+    font-size: 19px;
+    line-height: 1.8;
+    margin-bottom: 35px;
+}
+
+
+/* Homepage Buttons */
+
+.home-hero-buttons {
+    display: flex;
+    gap: 15px;
+    flex-wrap: wrap;
+}
+
+.home-primary-btn,
+.home-outline-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 16px 28px;
+    border-radius: 9px;
+
+    font-weight: 700;
+    text-decoration: none;
+
+    transition:
+        transform 0.25s ease,
+        box-shadow 0.25s ease,
+        background-color 0.25s ease;
+}
+
+.home-primary-btn {
+    background: var(--home-cyan);
+    color: var(--home-navy);
+}
+
+.home-primary-btn:hover {
+    background: #67e8f9;
+    transform: translateY(-3px);
+
+    box-shadow:
+        0 8px 30px rgba(34, 211, 238, 0.3);
+}
+
+.home-outline-btn {
+    border: 1px solid #67e8f9;
+    color: white;
+}
+
+.home-outline-btn:hover {
+    background: rgba(34, 211, 238, 0.12);
+    transform: translateY(-3px);
+}
+
+.hero-benefits {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 22px;
+
+    margin-top: 40px;
+    color: #cbd5e1;
+    font-size: 13px;
+}
+
+
+/* Section Headings */
+
+.home-section-heading {
+    text-align: center;
+    margin-bottom: 45px;
+}
+
+.home-section-heading h2 {
+    font-size: clamp(28px, 3vw, 44px);
+    letter-spacing: -1px;
+    line-height: 1.2;
+    color: var(--home-text);
+    margin-bottom: 15px;
+}
+
+.home-section-heading p {
+    color: var(--home-muted);
+    font-size: 16px;
+}
+
+
+/* Featured Services */
+
+.home-services {
+    padding: 90px 8%;
+    background: #f8fafc;
+    text-align: center;
+}
+
+.home-service-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+
+    gap: 24px;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+.home-service-card {
+    position: relative;
+
+    display: flex;
+    flex-direction: column;
+
+    text-align: left;
+    text-decoration: none;
+    color: var(--home-text);
+
+    background: white;
+    border: 1px solid #e2e8f0;
+    border-radius: 18px;
+    overflow: hidden;
+
+    box-shadow: 0 6px 20px rgba(15, 23, 42, 0.06);
+
+    transition:
+        transform 0.3s ease,
+        box-shadow 0.3s ease,
+        border-color 0.3s ease;
+}
+
+.home-service-card:hover {
+    transform: translateY(-10px);
+
+    border-color: #22d3ee;
+
+    box-shadow:
+        0 15px 35px rgba(14, 165, 233, 0.18),
+        0 0 18px rgba(34, 211, 238, 0.12);
+}
+
+.home-service-card:active {
+    transform: translateY(-3px) scale(0.98);
+}
+
+.home-service-card:focus-visible {
+    outline: 3px solid #1479ff;
+    outline-offset: 5px;
+}
+
+
+/* Service Images */
+
+.home-service-image {
+    width: 100%;
+    height: 190px;
+    overflow: hidden;
+    background: #e2e8f0;
+}
+
+.home-service-image img {
+    width: 100%;
+    height: 100%;
+    display: block;
+    object-fit: cover;
+
+    transition: transform 0.5s ease;
+}
+
+.home-service-card:hover img {
+    transform: scale(1.08);
+}
+
+
+/* Service Card Content */
+
+.home-service-details {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    padding: 22px;
+}
+
+.home-service-details h3 {
+    font-size: 20px;
+    line-height: 1.4;
+    margin-bottom: 18px;
+}
+
+.home-service-meta {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    flex-wrap: wrap;
+
+    margin-bottom: 22px;
+}
+
+.home-service-meta strong {
+    color: #0284c7;
+    font-size: 25px;
+}
+
+.home-service-meta > span {
+    background: #f1f5f9;
+    color: #475569;
+    padding: 5px 10px;
+    border-radius: 20px;
+    font-size: 12px;
+}
+
+.home-card-action {
+    margin-top: auto;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    border-top: 1px solid #e2e8f0;
+    padding-top: 18px;
+
+    color: #0369a1;
+    font-size: 14px;
+    font-weight: 700;
+}
+
+.home-card-arrow {
+    display: grid;
+    place-items: center;
+
+    width: 36px;
+    height: 36px;
+
+    border-radius: 50%;
+    background: #e0f2fe;
+    color: #0284c7;
+    font-size: 22px;
+
+    transition:
+        transform 0.3s ease,
+        background-color 0.3s ease;
+}
+
+.home-service-card:hover .home-card-arrow {
+    transform: translateX(4px);
+    background: #22d3ee;
+    color: #06182c;
+}
+
+.home-all-services {
+    display: inline-block;
+    margin-top: 40px;
+    color: #0284c7;
+    font-weight: 700;
+    text-decoration: none;
+}
+
+
+/* How It Works */
+
+.home-how-it-works {
+    padding: 90px 8%;
+    background: white;
+}
+
+.home-steps {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+
+    gap: 40px;
+    max-width: 1100px;
+    margin: 0 auto;
+}
+
+.home-step {
+    text-align: center;
+    padding: 30px 20px;
+}
+
+.step-number {
+    display: grid;
+    place-items: center;
+
+    width: 75px;
+    height: 75px;
+
+    border-radius: 22px;
+    background: #e0f2fe;
+    color: #0284c7;
+
+    font-size: 28px;
+    font-weight: 800;
+
+    margin: 0 auto 25px;
+
+    transition:
+        transform 0.3s ease,
+        background-color 0.3s ease;
+}
+
+.home-step:hover .step-number {
+    transform: translateY(-5px) rotate(-5deg);
+    background: #cffafe;
+}
+
+.home-step h3 {
+    font-size: 21px;
+    margin-bottom: 12px;
+}
+
+.home-step p {
+    color: var(--home-muted);
+    line-height: 1.8;
+}
+
+
+/* Final Call To Action */
+
+.home-final-cta {
+    padding: 80px 8%;
+    text-align: center;
+    color: white;
+
+    background: linear-gradient(
+        135deg,
+        #06182c,
+        #0c4a6e
+    );
+}
+
+.home-final-cta h2 {
+    font-size: clamp(30px, 4vw, 48px);
+    margin-bottom: 15px;
+}
+
+.home-final-cta p {
+    color: #cbd5e1;
+    margin-bottom: 30px;
+}
+
+
+/* Responsive Layout */
+
+@media (max-width: 1200px) {
+
+    .home-service-grid {
+        grid-template-columns:
+            repeat(2, minmax(0, 1fr));
+    }
+
+}
+
+@media (max-width: 768px) {
+
+    .home-hero {
+        min-height: 550px;
+        padding: 70px 6%;
+
+        background-image:
+            linear-gradient(
+                rgba(6, 24, 44, 0.75),
+                rgba(6, 24, 44, 0.95)
+            ),
+            url("images/hero-carwash.jpeg");
+    }
+
+    .home-hero h1 {
+        letter-spacing: -1px;
+    }
+
+    .home-services,
+    .home-how-it-works {
+        padding: 60px 6%;
+    }
+
+    .home-steps {
+        grid-template-columns: 1fr;
+        gap: 15px;
+    }
+
+    .hero-benefits {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+}
+
+@media (max-width: 540px) {
+
+    .home-service-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .home-hero-buttons {
+        flex-direction: column;
+    }
+
+}
+/* ==========================================
+   CLEANRIDE CURSOR ANIMATIONS
+========================================== */
+
+.hero-spotlight {
+    position: absolute;
+    inset: 0;
+
+    pointer-events: none;
+    z-index: 1;
+
+    background: radial-gradient(
+        300px circle at
+        var(--cursor-x, 50%)
+        var(--cursor-y, 50%),
+
+        rgba(34, 211, 238, 0.18),
+        transparent 70%
+    );
+
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.home-hero:hover .hero-spotlight {
+    opacity: 1;
+}
+
+
+/* Water Ripple */
+
+.cursor-ripple {
+    position: fixed;
+
+    width: 24px;
+    height: 24px;
+
+    border: 2px solid #22d3ee;
+    border-radius: 50%;
+
+    pointer-events: none;
+    z-index: 9999;
+
+    animation: water-ripple 0.7s ease-out forwards;
+}
+
+@keyframes water-ripple {
+
+    0% {
+        transform:
+            translate(-50%, -50%)
+            scale(0.3);
+
+        opacity: 0.9;
+    }
+
+    100% {
+        transform:
+            translate(-50%, -50%)
+            scale(4);
+
+        opacity: 0;
+    }
+
+}
+
+
+/* Scroll Reveal */
+
+.cleanride-home.animations-enabled .reveal {
+    opacity: 0;
+    translate: 0 25px;
+
+    transition:
+        opacity 0.65s ease,
+        translate 0.65s ease,
+        transform 0.3s ease,
+        box-shadow 0.3s ease;
+}
+
+.cleanride-home.animations-enabled .reveal.visible {
+    opacity: 1;
+    translate: 0 0;
+}
+
+
+/* Accessibility */
+
+@media (prefers-reduced-motion: reduce) {
+
+    .hero-spotlight,
+    .cursor-ripple {
+        display: none;
+    }
+
+    .cleanride-home *,
+    .cleanride-home.animations-enabled .reveal {
+        animation: none !important;
+        transition: none !important;
+        transform: none !important;
+        translate: none !important;
+        opacity: 1;
+    }
+
+}
 

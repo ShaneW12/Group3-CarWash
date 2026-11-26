@@ -1,119 +1,239 @@
 {% extends 'base.html' %}
+{% load static %}
 
-{% block content %} 
+{% block content %}
 
+<main class="cleanride-home">
 
-    <!-- Hero section in the Middle ---->
-    <main>
+    <!-- Hero Section -->
 
-        <section class="hero">
+    <section class="home-hero" id="home-hero">
 
-            <div class="hero-content">
+        <div class="hero-spotlight"></div>
 
-                <h1>Give Your Car the Clean It Deserves.</h1>
+        <div class="home-hero-content">
 
-                <p>
-                 Book your car wash online and customize your
-                    service to fit your needs.
-                </p>
+            <span class="home-eyebrow">
+                PREMIUM AUTOMOTIVE CARE
+            </span>
 
-                <a href="{% url 'booking' %}" class="btn">
-                    Book an Appointment
+            <h1>
+                Give Your Car the
+                <span>CleanRide</span>
+                Treatment.
+            </h1>
+
+            <p>
+                Professional car wash and detailing services,
+                personalized to your vehicle and your schedule.
+            </p>
+
+            <div class="home-hero-buttons">
+
+                <a href="{% url 'booking' %}"
+                   class="home-primary-btn">
+                    Book an Appointment &rarr;
+                </a>
+
+                <a href="#home-services"
+                   class="home-outline-btn">
+                    Explore Services
                 </a>
 
             </div>
 
-        </section>
+            <div class="hero-benefits">
+
+                <span>✓ Easy Online Booking</span>
+
+                <span>✓ Personalized Services</span>
+
+                <span>✓ Smart Scheduling</span>
+
+            </div>
+
+        </div>
+
+    </section>
 
 
-        <!----- Services Preview  box-->
-        <section class="services-preview">
+    <!-- Featured Services -->
 
-            <h2>Our Services</h2>
+    <section class="home-services" id="home-services">
 
-            <p class="section-description">
-                Choose the services that are right for your vehicle.
+        <div class="home-section-heading reveal">
+
+            <span class="home-eyebrow">
+                BUILT AROUND YOUR VEHICLE
+            </span>
+
+            <h2>Find Your Perfect Wash</h2>
+
+            <p>
+                Select a service below to start building
+                your personalized appointment.
             </p>
 
-            <div class="service-container">
+        </div>
 
-                <div class="service-card">
-                    <h3>Basic Wash</h3>
-                    <p>
-                        A quick and thorough exterior wash
-                        to keep your vehicle looking fresh.
-                    </p>
-                </div>
+        <div class="home-service-grid">
 
-                <div class="service-card">
-                    <h3>Triple Foam</h3>
-                    <p>
-                        Add an extra layer of cleaning power
-                        and shine with our triple foam treatment.
-                    </p>
-                </div>
+            {% for service in featured_services %}
 
-                <div class="service-card">
-                    <h3>Interior Detail</h3>
-                    <p>
-                        Give your interior a deeper clean
-                        with our detailing service.
-                    </p>
-                </div>
+                <a href="{% url 'booking' %}?service={{ service.code|urlencode }}"
+                   class="home-service-card reveal">
 
-                <div class="service-card">
-                    <h3>Vacuum</h3>
-                    <p>
-                        Remove dirt and debris from your
-                        vehicle's interior.
-                    </p>
-                </div>
+                    <div class="home-service-image">
+
+                        {% with image_path="images/services/"|add:service.code|add:".jpeg" %}
+
+                            <img
+                                src="{% static image_path %}"
+                                alt="{{ service.name }}"
+                                loading="lazy"
+                            >
+
+                        {% endwith %}
+
+                    </div>
+
+                    <div class="home-service-details">
+
+                        <h3>{{ service.name }}</h3>
+
+                        <div class="home-service-meta">
+
+                            <strong>
+                                ${{ service.price_dollars|floatformat:2 }}
+                            </strong>
+
+                            <span>
+                                {{ service.duration_minutes }} min
+                            </span>
+
+                        </div>
+
+                        <div class="home-card-action">
+
+                            <span>Book This Service</span>
+
+                            <span class="home-card-arrow">
+                                &rarr;
+                            </span>
+
+                        </div>
+
+                    </div>
+
+                </a>
+
+            {% empty %}
+
+                <p>No services are currently available.</p>
+
+            {% endfor %}
+
+        </div>
+
+        <a href="{% url 'services' %}"
+           class="home-all-services">
+
+            Explore All Services &rarr;
+
+        </a>
+
+    </section>
+
+
+    <!-- How It Works -->
+
+    <section class="home-how-it-works">
+
+        <div class="home-section-heading reveal">
+
+            <span class="home-eyebrow">
+                SIMPLE. FAST. CONVENIENT.
+            </span>
+
+            <h2>Three Steps to a Cleaner Ride</h2>
+
+            <p>
+                Spend less time planning and more time driving.
+            </p>
+
+        </div>
+
+        <div class="home-steps">
+
+            <div class="home-step reveal">
+
+                <div class="step-number">01</div>
+
+                <h3>Choose Your Service</h3>
+
+                <p>
+                    Customize your wash with services
+                    designed around your vehicle.
+                </p>
 
             </div>
 
-            <a href="{% url 'services' %}" class="secondary-btn">
-                View All Services
+            <div class="home-step reveal">
+
+                <div class="step-number">02</div>
+
+                <h3>Pick Your Time</h3>
+
+                <p>
+                    Choose an available appointment
+                    or get help from our AI assistant.
+                </p>
+
+            </div>
+
+            <div class="home-step reveal">
+
+                <div class="step-number">03</div>
+
+                <h3>Enjoy Your CleanRide</h3>
+
+                <p>
+                    Bring your vehicle in and let
+                    us take care of the rest.
+                </p>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- Final Call To Action -->
+
+    <section class="home-final-cta">
+
+        <div class="reveal">
+
+            <h2>Ready for a Cleaner Ride?</h2>
+
+            <p>
+                Your next car wash is only a few clicks away.
+            </p>
+
+            <a href="{% url 'booking' %}"
+               class="home-primary-btn">
+
+                Book Your Appointment &rarr;
+
             </a>
 
-        </section>
+        </div>
 
+    </section>
 
-        <!-- Why Were Better-->
-        <section class="why-us">
+</main>
 
-            <h2>Why Choose CleanRide?</h2>
+<script src="{% static 'js/home.js' %}" defer></script>
 
-            <div class="features">
-
-                <div>
-                    <h3>Easy Scheduling</h3>
-                    <p>
-                        Book your appointment online
-                        without waiting in line.
-                    </p>
-                </div>
-
-                <div>
-                    <h3>Customize Your Wash</h3>
-                    <p>
-                        Select additional services based
-                        on what your vehicle needs.
-                    </p>
-                </div>
-
-                <div>
-                    <h3>Know Your Time</h3>
-                    <p>
-                        See an estimated service duration
-                        before confirming your appointment.
-                    </p>
-                </div>
-
-            </div>
-
-        </section>
-
-    </main>
-
-
-    {% endblock %}
+{% endblock %}

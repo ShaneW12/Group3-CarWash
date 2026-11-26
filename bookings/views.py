@@ -85,7 +85,33 @@ def vehicle_models(request):
 
 # Existing website pages
 def home(request):
-    return render(request, 'index.html')
+    featured_codes = [
+        "standard-wash",
+        "triple-foam",
+        "interior-detailing",
+        "vacuum",
+    ]
+
+    services = {
+        service.code: service
+        for service in Service.objects.filter(
+            code__in=featured_codes
+        )
+    }
+
+    featured_services = [
+        services[code]
+        for code in featured_codes
+        if code in services
+    ]
+
+    return render(
+        request,
+        "index.html",
+        {
+            "featured_services": featured_services
+        }
+    )
 
 
 def services(request):
@@ -129,6 +155,20 @@ def logout(request):
 # Appointment Management - Create
 def booking(request):
      available_services = list(Service.objects.all())
+     preselected_services = (
+    request.POST.getlist("service")
+    if request.method == "POST"
+    else request.GET.getlist("service")
+)
+
+     allowed_codes = {
+    service.code for service in available_services
+}
+
+     preselected_services = [
+    code for code in preselected_services
+    if code in allowed_codes
+]
 
     # Only retrieve vehicles belonging to this customer
      customer_vehicles = (
@@ -141,6 +181,7 @@ def booking(request):
         "vehicle_years": vehicle_years,
         "available_services": available_services,
         "customer_vehicles": customer_vehicles,
+        "preselected_services": preselected_services,
     }
      
      if request.method == "POST":
@@ -511,6 +552,7 @@ def available_booking_slots(request):
         "duration_minutes": total_duration,
         "available_slots": available_slots,
     })
+
 @require_GET
 def ai_booking_recommendation(request):
     """

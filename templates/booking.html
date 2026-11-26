@@ -158,6 +158,7 @@
                         <div class="booking-service-grid">
                         
                             {% for service in available_services %}
+                            
                         
                                 <label class="service-option">
                                 
@@ -168,6 +169,7 @@
                                         data-price="{{ service.price_cents }}"
                                         data-duration="{{ service.duration_minutes }}"
                                         class="service-checkbox"
+                                        {% if service.code in preselected_services %}checked{% endif %}
                                     >
                                 
                                     <div class="service-card-content">
